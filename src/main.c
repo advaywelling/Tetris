@@ -38,6 +38,15 @@ void enable_ports(void) {
     GPIOC->PUPDR |= 0x55;
 }
 
+//setting up DAC for sound output
+void setup_dac(void) {
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    GPIOA->MODER |= 0x0300;
+    RCC->APB1ENR |= RCC_APB1ENR_DACEN;
+    DAC->CR |= 4 << DAC_CR_TSEL1;
+    DAC->CR |= DAC_CR_TEN1;
+    DAC->CR |= DAC_CR_EN1;
+}
 
 uint8_t col; // the column being scanned
 
