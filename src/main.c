@@ -166,24 +166,13 @@ void init_spi2(void) {
     GPIOB->MODER |=  ((2 << (12 * 2)) | (2 << (13 * 2)) | (2 << (15 * 2)));
     GPIOB->AFR[1] |=  (0x00 << GPIO_AFRH_AFSEL12_Pos | 0x00 << GPIO_AFRH_AFSEL13_Pos | 0x00 << GPIO_AFRH_AFSEL15_Pos);
     SPI2->CR1 &= ~SPI_CR1_SPE;
-    ///*
     SPI2->CR1 |= 7 << SPI_CR1_BR_Pos;
     SPI2->CR1 |= SPI_CR1_MSTR;
-    //SPI2->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;
     SPI2->CR2 |= 0xF << SPI_CR2_DS_Pos;
     SPI2->CR2 |= SPI_CR2_SSOE;
     SPI2->CR2 |= SPI_CR2_NSSP;
     SPI2->CR2 |= SPI_CR2_TXDMAEN;
     SPI2->CR1 |= SPI_CR1_SPE; 
-    //*/
-    /*
-    SPI2->CR1 |= SPI_CR1_BR_2 | SPI_CR1_BR_1 | SPI_CR1_BR_0;
-    SPI2->CR2 |= SPI_CR2_DS_3 | SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0;
-    SPI2->CR1 |= SPI_CR1_MSTR; 
-    SPI2->CR2 |= SPI_CR2_SSOE;  
-    SPI2->CR2 |= SPI_CR2_NSSP;  
-    SPI2->CR2 |= SPI_CR2_TXDMAEN;
-    SPI2->CR1 |= SPI_CR1_SPE; */
 }
 
 //===========================================================================
@@ -218,7 +207,6 @@ void spi2_enable_dma(void) {
 void init_spi1() {
     RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
-    //GPIOA->MODER |=  ((2 << (15 * 2)) | (2 << (5 * 2)) | (2 << (7 * 2)));
     GPIOA->MODER &= 0x3FFF33FF;
     GPIOA->MODER |= (2 << GPIO_MODER_MODER15_Pos) | (2 << GPIO_MODER_MODER5_Pos) | (2 << GPIO_MODER_MODER7_Pos);
     GPIOA->AFR[1] |=  (0x00 << GPIO_AFRH_AFSEL15_Pos);
@@ -226,13 +214,9 @@ void init_spi1() {
     SPI1->CR1 &= ~SPI_CR1_SPE;
     SPI1->CR1 |= (7 << SPI_CR1_BR_Pos);  
     SPI1->CR1 |= SPI_CR1_MSTR;           
-    //SPI1->CR1 |= SPI_CR1_SSM | SPI_CR1_SSI;  
-    //SPI1->CR2 |= (0x9 << SPI_CR2_DS_Pos); 
     SPI1->CR2 |= SPI_CR2_DS_3 | SPI_CR2_DS_0 | SPI_CR2_SSOE | SPI_CR2_NSSP;
     SPI1->CR2 &= ~(SPI_CR2_DS_1);
     SPI1->CR2 &= ~(SPI_CR2_DS_2);
-    //SPI1->CR2 |= SPI_CR2_SSOE;            
-    //SPI1->CR2 |= SPI_CR2_NSSP;   
     SPI1->CR2 |= SPI_CR2_TXDMAEN;       
     SPI1->CR1 |= SPI_CR1_SPE;
 }
