@@ -8,8 +8,8 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "/Users/advaywelling/Purdue/ECE 362/lab-6-spi-advaywelling/include",
-                "/Users/advaywelling/Purdue/ECE 362/lab-6-spi-advaywelling/src",
+                "/Users/advaywelling/Purdue/ECE 362/tetrists/include",
+                "/Users/advaywelling/Purdue/ECE 362/tetrists/src",
                 "/Users/advaywelling/.platformio/packages/framework-cmsis/CMSIS/Include",
                 "/Users/advaywelling/.platformio/packages/framework-cmsis-stm32f0/Include",
                 ""
@@ -17,8 +17,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/Users/advaywelling/Purdue/ECE 362/lab-6-spi-advaywelling/include",
-                    "/Users/advaywelling/Purdue/ECE 362/lab-6-spi-advaywelling/src",
+                    "/Users/advaywelling/Purdue/ECE 362/tetrists/include",
+                    "/Users/advaywelling/Purdue/ECE 362/tetrists/src",
                     "/Users/advaywelling/.platformio/packages/framework-cmsis/CMSIS/Include",
                     "/Users/advaywelling/.platformio/packages/framework-cmsis-stm32f0/Include",
                     ""
