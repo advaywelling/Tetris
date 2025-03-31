@@ -1,19 +1,3 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @author  Weili An, Niraj Menon
-  * @date    Feb 3, 2024
-  * @brief   ECE 362 Lab 6 Student template
-  ******************************************************************************
-*/
-
-/*******************************************************************************/
-
-// Fill out your username, otherwise your completion code will have the 
-// wrong username!
-const char* username = "wellina";
-
-/*******************************************************************************/ 
 
 #include "stm32f0xx.h"
 
