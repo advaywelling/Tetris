@@ -1,22 +1,6 @@
-/**
-  ******************************************************************************
-  * @file    main.c
-  * @author  Weili An, Niraj Menon
-  * @date    Feb 7, 2024
-  * @brief   ECE 362 Lab 7 student template
-  ******************************************************************************
-*/
-
-/*******************************************************************************/
-
-// Fill out your username!  Even though we're not using an autotest, 
-// it should be a habit to fill out your username in this field now.
-const char* username = "anamdev";
-
-/*******************************************************************************/ 
-
 #include "stm32f0xx.h"
 #include <stdint.h>
+#include "spi_tft.h"
 
 void internal_clock();
 
@@ -368,16 +352,3 @@ void init_lcd_spi(){
     init_spi1_slow();
     sdcard_io_high_speed();
 }
-
-#ifdef SHELL
-
-int main() {
-    internal_clock();
-    init_usart5();
-    enable_tty_interrupt();
-    setbuf(stdin,0);
-    setbuf(stdout,0);
-    setbuf(stderr,0);
-    command_shell();
-}
-#endif

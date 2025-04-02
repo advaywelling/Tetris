@@ -1,4 +1,5 @@
 #include "stm32f0xx.h"
+#include "buttons.h"
 //PC0 rotate right
 //PC1 hold
 //PC2 rotate left

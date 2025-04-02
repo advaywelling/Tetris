@@ -52,12 +52,12 @@ void tetris_sound(void) {
     }
 }
 
-int main(void) {
-    setup_dac();
-    setup_dma();
-    init_tim6();
-    tetris_sound();
-    while (1) {
-    }
-    return 0;
-}
+// int main(void) {
+//     setup_dac();
+//     setup_dma();
+//     init_tim6();
+//     tetris_sound();
+//     while (1) {
+//     }
+//     return 0;
+// }
