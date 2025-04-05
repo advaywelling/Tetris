@@ -352,3 +352,36 @@ void init_lcd_spi(){
     init_spi1_slow();
     sdcard_io_high_speed();
 }
+
+void draw_I(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+12, y+48, c);
+}
+
+void draw_O(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+24, y+24, c);
+}
+
+void draw_J(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+12, y+24, c);
+    LCD_DrawFillRectangle(x+12, y+12, x+36, y+24, c);
+}
+
+void draw_L(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+36, y+12, c);
+    LCD_DrawFillRectangle(x+24, y-12, x+36, y, c);
+}
+
+void draw_S(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+24, y+12, c);
+    LCD_DrawFillRectangle(x+12, y-12, x+36, y, c);
+}
+
+void draw_Z(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+24, y+12, c);
+    LCD_DrawFillRectangle(x+12, y+12, x+36, y+24, c);
+}
+
+void draw_T(u16 x, u16 y, u16 c){
+    LCD_DrawFillRectangle(x, y, x+36, y+12, c);
+    LCD_DrawFillRectangle(x+12, y-12, x+24, y, c);
+}
