@@ -1,6 +1,11 @@
 #ifndef __SPI_TFT_H__
 #define __SPI_TFT_H__
 
+typedef struct {
+    int x;
+    int y;
+} Point;
+
 void init_usart5();
 void enable_tty_interrupt(void);
 char interrupt_getchar();
@@ -21,11 +26,10 @@ void draw_T(uint16_t x, uint16_t y, uint16_t c);
 void draw_S(uint16_t x, uint16_t y, uint16_t c);
 void draw_Z(uint16_t x, uint16_t y, uint16_t c);
 void draw_cell(uint16_t base_x, uint16_t base_y, uint16_t color);
+void rotate_point_clockwise(Point *p);
+void rotate_point_anticlockwise(Point* p);
+void draw_piece(const Point* cells, uint16_t start_x, uint16_t start_y, uint16_t color);
 
-typedef struct {
-    int x;
-    int y;
-} Point;
 
 
 #endif /* __SPI_TFT_H__ */

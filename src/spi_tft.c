@@ -419,6 +419,21 @@ void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
     }
 }
 
+void rotate_point_clockwise(Point* p) {
+    for(int i=0; i<4; i++){
+        int temp = p[i].x;
+        p[i].x = -(p[i].y);
+        p[i].y = temp;
+    }
+}
+
+void rotate_point_anticlockwise(Point* p) {
+    for(int i=0; i<4; i++){
+        int temp = p[i].x;
+        p[i].x = (p[i].y);
+        p[i].y = -temp;
+    }
+}
 
 void draw_I(uint16_t x, uint16_t y, uint16_t c){
     draw_piece(piece_I, x, y, c);
