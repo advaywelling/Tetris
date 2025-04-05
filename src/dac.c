@@ -51,7 +51,7 @@ void tetris_sound(void) {
         }
     }
 }
-
+/*
 int main(void) {
     setup_dac();
     setup_dma();
@@ -60,4 +60,4 @@ int main(void) {
     while (1) {
     }
     return 0;
-}
+}*/

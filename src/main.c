@@ -8,6 +8,8 @@
 #include "spi_tft.h"
 #include "buttons.h"
 
+void internal_clock();
+
 int main() {
     internal_clock();
     setup_TIM2();
@@ -18,6 +20,8 @@ int main() {
     setbuf(stdout,0);
     setbuf(stderr,0);
     LCD_Setup();
-    //LCD_Clear(0x12345);
-    command_shell();
+    LCD_Clear(0000);
+    draw_J(50, 50, 0x0ff0);
+    
+    //command_shell();
 }

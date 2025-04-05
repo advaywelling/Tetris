@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include "spi_tft.h"
 
+typedef uint16_t u16;
+
 void internal_clock();
 
 // Uncomment only one of the following to test each step
@@ -353,35 +355,95 @@ void init_lcd_spi(){
     sdcard_io_high_speed();
 }
 
-void draw_I(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+12, y+48, c);
+
+const Point piece_T[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  0,  -1 }
+};
+
+const Point piece_L[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  1,  -1 }
+};
+
+const Point piece_J[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  -1,  -1 }
+};
+
+const Point piece_O[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    { -1,  1 },
+    {  0,  1 }
+};
+
+const Point piece_S[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  0, -1 },
+    {  1, -1 }
+};
+
+const Point piece_Z[4] = {
+    { -1, -1 },
+    {  0,  0 },  // pivot cell
+    {  0, -1 },
+    {  1,  0 }
+};
+
+const Point piece_I[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  2,  0 }
+};
+
+void draw_cell(uint16_t base_x, uint16_t base_y, uint16_t color) {
+    LCD_DrawFillRectangle(base_x, base_y, base_x + 12, base_y + 12, color);
 }
 
-void draw_O(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+24, y+24, c);
+void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
+    for (int i = 0; i < 4; i++) {
+        // Calculate the top-left pixel for the cell by scaling the relative grid coordinate
+        // and adding the starting offset.
+        int draw_x = start_x + (cells[i].x * 12);
+        int draw_y = start_y + (cells[i].y * 12);
+        draw_cell(draw_x, draw_y, color);
+    }
 }
 
-void draw_J(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+12, y+24, c);
-    LCD_DrawFillRectangle(x+12, y+12, x+36, y+24, c);
+
+void draw_I(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_I, x, y, c);
 }
 
-void draw_L(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+36, y+12, c);
-    LCD_DrawFillRectangle(x+24, y-12, x+36, y, c);
+void draw_O(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_O, x, y, c);
 }
 
-void draw_S(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+24, y+12, c);
-    LCD_DrawFillRectangle(x+12, y-12, x+36, y, c);
+void draw_J(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_J, x, y, c);
 }
 
-void draw_Z(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+24, y+12, c);
-    LCD_DrawFillRectangle(x+12, y+12, x+36, y+24, c);
+void draw_L(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_L, x, y, c);
 }
 
-void draw_T(u16 x, u16 y, u16 c){
-    LCD_DrawFillRectangle(x, y, x+36, y+12, c);
-    LCD_DrawFillRectangle(x+12, y-12, x+24, y, c);
+void draw_S(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_S, x, y, c);
+}
+
+void draw_Z(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_Z, x, y, c);
+}
+
+void draw_T(uint16_t x, uint16_t y, uint16_t c){
+    draw_piece(piece_T, x, y, c);
 }
