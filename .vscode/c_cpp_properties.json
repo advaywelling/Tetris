@@ -28,7 +28,6 @@
                 "PLATFORMIO=60118",
                 "STM32F0",
                 "STM32F091xC",
-                "STM32F091",
                 "F_CPU=48000000L",
                 "STM32F091",
                 ""

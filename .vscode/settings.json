@@ -1,5 +1,8 @@
 {
     "files.associations": {
-        "fifo.h": "c"
+        "fifo.h": "c",
+        "spi_tft.h": "c",
+        "commands.h": "c",
+        "buttons.h": "c"
     }
 }
