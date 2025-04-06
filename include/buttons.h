@@ -18,6 +18,8 @@ void TIM2_IRQHandler();
 #define ORANGE    0xFC00  // (255, 165, 0)
 #define BLUE 0x0017  // (0, 0, 139)
 #define PURPLE    0x8010  // (128, 0, 128)
+#define BLACK 0x0000
+#define WHITE 0xFFFF
 
 volatile int leftButton;
 volatile int rightButton;

@@ -14,7 +14,7 @@ uint16_t buttonBounce[6];
 void setup_gpio(){
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     
-    //pc0-5
+    //pa5-10
     GPIOA->MODER &= ~(0xFFF << 10);
     GPIOA->PUPDR |= (0xAAA << 10);
     GPIOA->PUPDR &= ~(0x555 << 10);
