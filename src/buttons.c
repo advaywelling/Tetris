@@ -11,24 +11,6 @@
 //for debouncing
 uint16_t buttonBounce[6];
 
-
-volatile int leftButton;
-volatile int rightButton;
-volatile int downButton;
-volatile int rotLeftButton;
-volatile int rotRightButton;
-volatile int holdButton;
-
-#define YELLOW    0xFFE0  // (255, 255, 0)
-#define CYAN      0x07FF  // (0, 255, 255)
-#define RED       0xF800  // (255, 0, 0)
-#define GREEN     0x07E0  // (0, 255, 0)
-#define ORANGE    0xFC00  // (255, 165, 0)
-#define BLUE 0x0017  // (0, 0, 139)
-#define PURPLE    0x8010  // (128, 0, 128)
-
-
-
 void setup_gpio(){
     RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     
@@ -71,22 +53,28 @@ void TIM2_IRQHandler(){
             buttonBounce[i] = 0xFFFF;
             
             if(i == 0){
-                //rotate right
+                //rotate left
+                rotLeftButton = 1;
             }
             else if(i==1){
                 //hold
+                holdButton = 1;
             }
             else if(i==2){
                 //rotate right
+                rotRightButton = 1;
             }
             else if(i==3){
                 //move left
+                leftButton = 1;
             }
             else if(i==4){
                 //move down
+                downButton = 1;
             }
             else if(i==5){
                 //move right
+                rightButton = 1;
             }
         }
     }
