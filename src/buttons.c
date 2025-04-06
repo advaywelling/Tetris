@@ -1,11 +1,11 @@
 #include "stm32f0xx.h"
 #include "buttons.h"
-//PC0 rotate right
-//PC1 hold
-//PC2 rotate left
-//PC3 move right
-//PC4 move down
-//PC5 move left
+//PA5 rotate left
+//PA6 hold
+//PA7 rotate right
+//PA8 move left
+//PA9 move down
+//PA10 move right
 
 
 //for debouncing
@@ -30,12 +30,12 @@ volatile int holdButton;
 
 
 void setup_gpio(){
-    RCC->AHBENR |= RCC_AHBENR_GPIOCEN;
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
     
     //pc0-5
-    GPIOC->MODER &= ~(0xFFF);
-    GPIOC->PUPDR |= (0xAAA);
-    GPIOC->PUPDR &= ~(0x555);
+    GPIOA->MODER &= ~(0xFFF << 10);
+    GPIOA->PUPDR |= (0xAAA << 10);
+    GPIOA->PUPDR &= ~(0x555 << 10);
 }
 
 void setup_TIM2(){
@@ -56,67 +56,12 @@ void setup_TIM2(){
     NVIC->ISER[0] = 1 << TIM2_IRQn;
 }
 
-#define LCD_WIDTH  240
-#define LCD_HEIGHT 320
-#define NUM_WIDTH  30
-#define NUM_HEIGHT 50
-#define START_X   ((LCD_WIDTH - NUM_WIDTH) / 2)
-#define START_Y   ((LCD_HEIGHT - NUM_HEIGHT) / 2)
-
-void draw1() {
-    LCD_Clear(0);
-    LCD_DrawRectangle(START_X + 10, START_Y, START_X + 20, START_Y + 50, 0xFFFF);
-}
-
-void draw2() {
-    LCD_Clear(0);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 30, START_Y+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF);
-    LCD_DrawRectangle(START_X+20, START_Y, START_X + 30, START_Y + 30+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+30, START_X + 10, START_Y + 60+10, 0xFFFF);
-    
-}
-
-void draw3() {
-    LCD_Clear(0x0);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 30, START_Y+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 60+10, 0xFFFF);
-}
-
-void draw4() {
-    LCD_Clear(0x0);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 60+10, 0xFFFF);
-    LCD_DrawRectangle(START_X+20, START_Y+30+10, START_X + 30, START_Y + 60+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
-  
-}
-
-void draw5() {
-    LCD_Clear(0x0);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 30, START_Y+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 30+10, 0xFFFF);
-    LCD_DrawRectangle(START_X+20, START_Y+30, START_X + 30, START_Y + 60+10, 0xFFFF);
-}
-
-void draw6() {
-    LCD_Clear(0x0);
-    LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 30+10, 0xFFFF); //short
-    LCD_DrawRectangle(START_X, START_Y, START_X+30, START_Y+10, 0xFFFF); //bot hori
-    LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF); //top hori
-    LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF); //hori mid
-    LCD_DrawRectangle(START_X+20, START_Y, START_X + 30, START_Y + 60+10, 0xFFFF); //tall left
-}
-
 void TIM2_IRQHandler(){
     TIM2->SR &= ~TIM_SR_UIF;
 
-    //pc0-5
-    int inputs = GPIOC->IDR & 0x3F;
+    //pa5-10
+    int inputs = (GPIOA->IDR & (0x3F << 5));
+    inputs = inputs >> 5; //makes them right aligned
 
     for(int i = 0; i < 6; i++){
         buttonBounce[i] = (buttonBounce[i] << 1);
@@ -127,27 +72,78 @@ void TIM2_IRQHandler(){
             
             if(i == 0){
                 //rotate right
-                draw1();
             }
             else if(i==1){
                 //hold
-                draw2();
             }
             else if(i==2){
-                //rotate left
-                draw3();
+                //rotate right
             }
             else if(i==3){
-                //move right
-                draw4();
+                //move left
             }
             else if(i==4){
                 //move down
-                draw5();
             }
             else if(i==5){
-                draw6();
+                //move right
             }
         }
     }
 }
+
+// #define LCD_WIDTH  240
+// #define LCD_HEIGHT 320
+// #define NUM_WIDTH  30
+// #define NUM_HEIGHT 50
+// #define START_X   ((LCD_WIDTH - NUM_WIDTH) / 2)
+// #define START_Y   ((LCD_HEIGHT - NUM_HEIGHT) / 2)
+
+// void draw1() {
+//     LCD_Clear(0);
+//     LCD_DrawRectangle(START_X + 10, START_Y, START_X + 20, START_Y + 50, 0xFFFF);
+// }
+
+// void draw2() {
+//     LCD_Clear(0);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 30, START_Y+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X+20, START_Y, START_X + 30, START_Y + 30+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+30, START_X + 10, START_Y + 60+10, 0xFFFF);
+    
+// }
+
+// void draw3() {
+//     LCD_Clear(0x0);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 30, START_Y+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 60+10, 0xFFFF);
+// }
+
+// void draw4() {
+//     LCD_Clear(0x0);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 60+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X+20, START_Y+30+10, START_X + 30, START_Y + 60+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
+  
+// }
+
+// void draw5() {
+//     LCD_Clear(0x0);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 30, START_Y+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 30+10, 0xFFFF);
+//     LCD_DrawRectangle(START_X+20, START_Y+30, START_X + 30, START_Y + 60+10, 0xFFFF);
+// }
+
+// void draw6() {
+//     LCD_Clear(0x0);
+//     LCD_DrawRectangle(START_X, START_Y, START_X + 10, START_Y + 30+10, 0xFFFF); //short
+//     LCD_DrawRectangle(START_X, START_Y, START_X+30, START_Y+10, 0xFFFF); //bot hori
+//     LCD_DrawRectangle(START_X, START_Y+60, START_X + 30, START_Y + 60+10, 0xFFFF); //top hori
+//     LCD_DrawRectangle(START_X, START_Y+30, START_X + 30, START_Y + 30+10, 0xFFFF); //hori mid
+//     LCD_DrawRectangle(START_X+20, START_Y, START_X + 30, START_Y + 60+10, 0xFFFF); //tall left
+// }
