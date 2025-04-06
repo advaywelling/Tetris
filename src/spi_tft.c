@@ -236,6 +236,7 @@ int main() {
 #include "lcd.h"
 #include "commands.h"
 
+
 #define FIFOSIZE 16
 char serfifo[FIFOSIZE];
 int seroffset = 0;
@@ -356,55 +357,6 @@ void init_lcd_spi(){
 }
 
 
-const Point piece_T[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  0,  -1 }
-};
-
-const Point piece_L[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  1,  -1 }
-};
-
-const Point piece_J[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  -1,  -1 }
-};
-
-const Point piece_O[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    { -1,  1 },
-    {  0,  1 }
-};
-
-const Point piece_S[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  0, -1 },
-    {  1, -1 }
-};
-
-const Point piece_Z[4] = {
-    { -1, -1 },
-    {  0,  0 },  // pivot cell
-    {  0, -1 },
-    {  1,  0 }
-};
-
-const Point piece_I[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  2,  0 }
-};
-
 void draw_cell(uint16_t base_x, uint16_t base_y, uint16_t color) {
     LCD_DrawFillRectangle(base_x, base_y, base_x + 12, base_y + 12, color);
 }
@@ -419,46 +371,22 @@ void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
     }
 }
 
-void rotate_point_clockwise(Point* p) {
+void rotate_piece_clockwise(Piece* p) {
+    draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
     for(int i=0; i<4; i++){
-        int temp = p[i].x;
-        p[i].x = -(p[i].y);
-        p[i].y = temp;
+        int temp = (p->blocks)[i].x;
+        (p->blocks)[i].x = -((p->blocks)[i].y);
+        (p->blocks)[i].y = temp;
     }
+    draw_piece(p->blocks, p->start_x, p->start_y, p->color);
 }
 
-void rotate_point_anticlockwise(Point* p) {
+void rotate_piece_counterclockwise(Piece* p) {
+    draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
     for(int i=0; i<4; i++){
-        int temp = p[i].x;
-        p[i].x = (p[i].y);
-        p[i].y = -temp;
+        int temp = (p->blocks)[i].x;
+        (p->blocks)[i].x = (p->blocks)[i].y;
+        (p->blocks)[i].y = -temp;
     }
-}
-
-void draw_I(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_I, x, y, c);
-}
-
-void draw_O(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_O, x, y, c);
-}
-
-void draw_J(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_J, x, y, c);
-}
-
-void draw_L(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_L, x, y, c);
-}
-
-void draw_S(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_S, x, y, c);
-}
-
-void draw_Z(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_Z, x, y, c);
-}
-
-void draw_T(uint16_t x, uint16_t y, uint16_t c){
-    draw_piece(piece_T, x, y, c);
+    draw_piece(p->blocks, p->start_x, p->start_y, p->color);
 }
