@@ -8,19 +8,19 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/include",
-                "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/src",
-                "/Users/arnav/.platformio/packages/framework-cmsis/CMSIS/Include",
-                "/Users/arnav/.platformio/packages/framework-cmsis-stm32f0/Include",
+                "/Users/advaywelling/Purdue/ECE 362/tetrists/include",
+                "/Users/advaywelling/Purdue/ECE 362/tetrists/src",
+                "/Users/advaywelling/.platformio/packages/framework-cmsis/CMSIS/Include",
+                "/Users/advaywelling/.platformio/packages/framework-cmsis-stm32f0/Include",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/include",
-                    "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/src",
-                    "/Users/arnav/.platformio/packages/framework-cmsis/CMSIS/Include",
-                    "/Users/arnav/.platformio/packages/framework-cmsis-stm32f0/Include",
+                    "/Users/advaywelling/Purdue/ECE 362/tetrists/include",
+                    "/Users/advaywelling/Purdue/ECE 362/tetrists/src",
+                    "/Users/advaywelling/.platformio/packages/framework-cmsis/CMSIS/Include",
+                    "/Users/advaywelling/.platformio/packages/framework-cmsis-stm32f0/Include",
                     ""
                 ]
             },
@@ -32,7 +32,7 @@
                 "STM32F091",
                 ""
             ],
-            "compilerPath": "/Users/arnav/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
+            "compilerPath": "/Users/advaywelling/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
             "compilerArgs": [
                 "-mthumb",
                 "-mcpu=cortex-m0",

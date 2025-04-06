@@ -1,4 +1,5 @@
 #include "stm32f0xx.h"
+#define M_PI 3.14159
 #define RATE 8000
 
 //setting up DAC for sound output
@@ -48,6 +49,21 @@ void tetris_sound(void) {
         for (int j = 0; j < duration; j++) {
             if (idx >= RATE) return;
             audio[idx++] = (j % (RATE / freq) < (RATE / (2 * freq))) ? 3000 : 1000;
+        }
+    }
+}
+
+void background_music(void) {
+    const int music_freq[] = {800, 900, 1000};
+    int num = sizeof(music_freq) / sizeof(music_freq[0]);
+    int duration = RATE / num;
+    int idx = 0;
+    for (int i = 0; i < num; i++) {
+        int freq = music_freq[i];
+        for (int j = 0; j < duration && idx < RATE; j++) {
+            double k = (double)j / RATE;
+            double sample = sin(2 * M_PI * freq * k);
+            
         }
     }
 }
