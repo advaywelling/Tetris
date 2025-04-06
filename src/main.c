@@ -7,6 +7,7 @@
 #include "commands.h"
 #include "spi_tft.h"
 #include "buttons.h"
+#include "drawbg.h"
 
 void internal_clock();
 
@@ -41,76 +42,6 @@ void draw_display(){
         }
     }
 }
-
-void draw_borders(int color){
-    LCD_DrawFillRectangle(0, TOP_EDGE-6, 240, TOP_EDGE-1, color);
-    LCD_DrawFillRectangle(LEFT_EDGE-6, TOP_EDGE, LEFT_EDGE-1, 320, color);
-    LCD_DrawFillRectangle(RIGHT_EDGE+1, TOP_EDGE, RIGHT_EDGE+7, BOT_EDGE, color);
-}
-
-void draw_title(int color){
-    int ygap = 17;
-    int xgap = 24;
-    int len = 8;
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len*3, ygap+len, color);
-    LCD_DrawFillRectangle(xgap+len, ygap+len,xgap+len*2, ygap+len*5, color);
-    xgap = xgap + len*4;
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len*3, ygap+len, color);
-    LCD_DrawFillRectangle(xgap, ygap+len, xgap+len, ygap+len*5, color);
-    LCD_DrawFillRectangle(xgap+len, ygap+len*2, xgap+len*2, ygap+len*3, color);
-    LCD_DrawFillRectangle(xgap+len, ygap+len*4, xgap+len*3, ygap+len*5, color);
-    xgap = xgap + len*4;
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len*3, ygap+len, color);
-    LCD_DrawFillRectangle(xgap+len, ygap+len,xgap+len*2, ygap+len*5, color);
-    xgap = xgap + len*4;
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len*4, ygap+len, color);
-    LCD_DrawFillRectangle(xgap, ygap+len, xgap+len, ygap+len*5, color);
-    LCD_DrawFillRectangle(xgap, ygap+len*2, xgap+len*4, ygap+len*3, color);
-    LCD_DrawFillRectangle(xgap+len*2, ygap+len*3, xgap+len*3, ygap+len*4, color);
-    LCD_DrawFillRectangle(xgap+len*3, ygap+len*4, xgap+len*4, ygap+len*5, color);
-    LCD_DrawFillRectangle(xgap+len*3, ygap, xgap+len*4, ygap+len*3, color);
-    xgap = xgap + len*5;
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len*3, ygap+len, color);
-    LCD_DrawFillRectangle(xgap+len, ygap+len, xgap+len*2, ygap+len*5, color);
-    LCD_DrawFillRectangle(xgap, ygap+len*4, xgap+len*3, ygap+len*5, color);
-    xgap = xgap + len*4;
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len*3, ygap+len, color);
-    LCD_DrawFillRectangle(xgap, ygap, xgap+len, ygap+len*3, color);
-    LCD_DrawFillRectangle(xgap+len, ygap+len*2, xgap+len*2, ygap+len*3, color);
-    LCD_DrawFillRectangle(xgap+len*2, ygap+len*3, xgap+len*3, ygap+len*5, color);
-    LCD_DrawFillRectangle(xgap, ygap+len*4, xgap+len*2, ygap+len*5, color);
-
-
-    xgap = 24;
-    LCD_DrawRectangle(xgap, ygap, xgap+len*3, ygap+len, ~color);
-    LCD_DrawRectangle(xgap+len, ygap+len,xgap+len*2, ygap+len*5, ~color);
-    xgap = xgap + len*4;
-    LCD_DrawRectangle(xgap, ygap, xgap+len*3, ygap+len, ~color);
-    LCD_DrawRectangle(xgap, ygap+len, xgap+len, ygap+len*5, ~color);
-    LCD_DrawRectangle(xgap+len, ygap+len*2, xgap+len*2, ygap+len*3, ~color);
-    LCD_DrawRectangle(xgap+len, ygap+len*4, xgap+len*3, ygap+len*5, ~color);
-    xgap = xgap + len*4;
-    LCD_DrawRectangle(xgap, ygap, xgap+len*3, ygap+len, ~color);
-    LCD_DrawRectangle(xgap+len, ygap+len,xgap+len*2, ygap+len*5, ~color);
-    xgap = xgap + len*4;
-    LCD_DrawRectangle(xgap, ygap, xgap+len*4, ygap+len, ~color);
-    LCD_DrawRectangle(xgap, ygap+len, xgap+len, ygap+len*5, ~color);
-    LCD_DrawRectangle(xgap, ygap+len*2, xgap+len*4, ygap+len*3, ~color);
-    LCD_DrawRectangle(xgap+len*2, ygap+len*3, xgap+len*3, ygap+len*4, ~color);
-    LCD_DrawRectangle(xgap+len*3, ygap+len*4, xgap+len*4, ygap+len*5, ~color);
-    LCD_DrawRectangle(xgap+len*3, ygap, xgap+len*4, ygap+len*3, ~color);
-    xgap = xgap + len*5;
-    LCD_DrawRectangle(xgap, ygap, xgap+len*3, ygap+len, ~color);
-    LCD_DrawRectangle(xgap+len, ygap+len, xgap+len*2, ygap+len*5, ~color);
-    LCD_DrawRectangle(xgap, ygap+len*4, xgap+len*3, ygap+len*5, ~color);
-    xgap = xgap + len*4;
-    LCD_DrawRectangle(xgap, ygap, xgap+len*3, ygap+len, ~color);
-    LCD_DrawRectangle(xgap, ygap, xgap+len, ygap+len*3, ~color);
-    LCD_DrawRectangle(xgap+len, ygap+len*2, xgap+len*2, ygap+len*3, ~color);
-    LCD_DrawRectangle(xgap+len*2, ygap+len*3, xgap+len*3, ygap+len*5, ~color);
-    LCD_DrawRectangle(xgap, ygap+len*4, xgap+len*2, ygap+len*5, ~color);
-}
-
 
 const Point blocks_T[4] = {
     { -1,  0 },
@@ -177,6 +108,49 @@ Piece piece_S;
 Piece piece_Z;
 Piece piece_T;
 
+Piece* next_piece;
+Piece* hold_piece;
+
+//call clear w 1 & prev piece to clear before drawing a new piece
+void draw_next_piece(Piece* p, int clear){
+    int shift = 0;
+    if(p->blocks[0].x == blocks_O[0].x && p->blocks[1].x == blocks_O[1].x
+      && p->blocks[2].x == blocks_O[2].x && p->blocks[3].x == blocks_O[3].x &&
+      p->blocks[0].y == blocks_O[0].y && p->blocks[1].y == blocks_O[1].y
+      && p->blocks[2].y == blocks_O[2].y && p->blocks[3].y == blocks_O[3].y){
+        shift = 6;
+    }
+    if(p->blocks[0].x == blocks_I[0].x && p->blocks[1].x == blocks_I[1].x
+        && p->blocks[2].x == blocks_I[2].x && p->blocks[3].x == blocks_I[3].x &&
+        p->blocks[0].y == blocks_I[0].y && p->blocks[1].y == blocks_I[1].y
+        && p->blocks[2].y == blocks_I[2].y && p->blocks[3].y == blocks_I[3].y){
+        shift = -6;
+    }
+    int color = clear == 1 ? BLACK : p->color;
+    draw_piece(p->blocks, 186+3+18+shift, 130, color);
+}
+
+//call clear w 1 & prev piece to clear before drawing a new piece
+void draw_hold_piece(Piece* p, int clear){
+    if(p != NULL){
+        //draw it bc hold can be no piece if game just started
+        int shift = 0;
+        if(p->blocks[0].x == blocks_O[0].x && p->blocks[1].x == blocks_O[1].x
+        && p->blocks[2].x == blocks_O[2].x && p->blocks[3].x == blocks_O[3].x &&
+        p->blocks[0].y == blocks_O[0].y && p->blocks[1].y == blocks_O[1].y
+        && p->blocks[2].y == blocks_O[2].y && p->blocks[3].y == blocks_O[3].y){
+            shift = 6;
+        }
+        if(p->blocks[0].x == blocks_I[0].x && p->blocks[1].x == blocks_I[1].x
+            && p->blocks[2].x == blocks_I[2].x && p->blocks[3].x == blocks_I[3].x &&
+            p->blocks[0].y == blocks_I[0].y && p->blocks[1].y == blocks_I[1].y
+            && p->blocks[2].y == blocks_I[2].y && p->blocks[3].y == blocks_I[3].y){
+            shift = -6;
+        }
+        int color = clear == 1 ? BLACK : p->color;
+        draw_piece(p->blocks, 3+18+shift, 130, color);
+    }
+}
 
 int main() {
 
@@ -230,13 +204,43 @@ int main() {
     setbuf(stdout,0);
     setbuf(stderr,0);
     LCD_Setup();
-    //game logic
+    //game setup
     init_game();
     LCD_Clear(BLACK);
     draw_title(ORANGE);
     draw_borders(WHITE);
+    draw_hold(WHITE);
+    draw_score(WHITE);
+    draw_next(WHITE);
+    //game logic
+    //draw_display()
+    hold_piece = NULL;
+    next_piece = &piece_L; //copy_piece(&piece_L)
+    hold_piece = &piece_O; //tmp for testing
+    draw_hold_piece(hold_piece, 0); //tmp for testing
     while(1){
-        draw_display();
+        //draw_display(); //THIS IS SO SLOW, maybe just redraw the update every update?
+        
+        draw_next_piece(next_piece, 0); //can make this conditional once we create new piece gen
+        
+        if(holdButton){
+            draw_hold_piece(hold_piece, 1);
+            if(hold_piece == NULL){
+                //hold_piece = curr_piece
+                //curr_piece = next_piece
+                //generate new next piece
+            }
+            else{
+                //curr_piece = temp
+                //curr_piece = hold_piece
+                //hold_piece = temp
+            }
+            hold_piece = next_piece; //temp logic to test buttons
+            holdButton = 0;
+            draw_hold_piece(hold_piece, 0);
+            draw_next_piece(next_piece, 1);
+            next_piece = &piece_T;
+        }
     }
     
     //draw_piece(current_piece.blocks, current_piece.start_x, current_piece.start_y, current_piece.color);
