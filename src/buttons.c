@@ -56,23 +56,23 @@ void TIM2_IRQHandler(){
                 //rotate left
                 rotLeftButton = 1;
             }
-            else if(i==1){
+            if(i==1){
                 //hold
                 holdButton = 1;
             }
-            else if(i==2){
+            if(i==2){
                 //rotate right
                 rotRightButton = 1;
             }
-            else if(i==3){
+            if(i==3){
                 //move left
                 leftButton = 1;
             }
-            else if(i==4){
+            if(i==4){
                 //move down
                 downButton = 1;
             }
-            else if(i==5){
+            if(i==5){
                 //move right
                 rightButton = 1;
             }
