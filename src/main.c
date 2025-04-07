@@ -8,6 +8,7 @@
 #include "spi_tft.h"
 #include "buttons.h"
 #include "drawbg.h"
+#include <time.h>
 
 void internal_clock();
 
@@ -41,72 +42,7 @@ void draw_display(){
             LCD_DrawFillRectangle(LEFT_EDGE, TOP_EDGE, LEFT_EDGE + 12*(j+1), TOP_EDGE + 12*(i+1), display[i][j]);
         }
     }
-}
-
-const Point blocks_T[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  0,  -1 }
-};
-
-const Point blocks_L[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  1,  -1 }
-};
-
-const Point blocks_J[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  -1,  -1 }
-};
-
-const Point blocks_O[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    { -1,  1 },
-    {  0,  1 }
-};
-
-const Point blocks_S[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  0, -1 },
-    {  1, -1 }
-};
-
-const Point blocks_Z[4] = {
-    { -1, -1 },
-    {  0,  0 },  // pivot cell
-    {  0, -1 },
-    {  1,  0 }
-};
-
-const Point blocks_I[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  2,  0 }
-};
-
-Point test_blocks[4] = {
-    { -1,  0 },
-    {  0,  0 },  // pivot cell
-    {  1,  0 },
-    {  -1,  -1 }
-}; 
-
-Piece current_piece;
-Piece piece_J;
-Piece piece_L;
-Piece piece_I;
-Piece piece_O;
-Piece piece_S;
-Piece piece_Z;
-Piece piece_T;
+} 
 
 Piece* next_piece;
 Piece* hold_piece;
@@ -153,46 +89,8 @@ void draw_hold_piece(Piece* p, int clear){
 }
 
 int main() {
-
-    piece_J.blocks = blocks_J;
-    piece_J.start_x = 108;
-    piece_J.start_y = 80;
-    piece_J.color = BLUE;
-
-    piece_L.blocks = blocks_L;
-    piece_L.start_x = 108;
-    piece_L.start_y = 80;
-    piece_L.color = ORANGE;
-
-    piece_I.blocks = blocks_I;
-    piece_I.start_x = 108;
-    piece_I.start_y = 80;
-    piece_I.color = CYAN;
-
-    piece_O.blocks = blocks_O;
-    piece_O.start_x = 108;
-    piece_O.start_y = 80;
-    piece_O.color = YELLOW;
-
-    piece_S.blocks = blocks_S;
-    piece_S.start_x = 108;
-    piece_S.start_y = 80;
-    piece_S.color = GREEN;
-
-    piece_Z.blocks = blocks_Z;
-    piece_Z.start_x = 108;
-    piece_Z.start_y = 80;
-    piece_Z.color = RED;
-
-    piece_T.blocks = blocks_T;
-    piece_T.start_x = 108;
-    piece_T.start_y = 80;
-    piece_T.color = PURPLE;
-
-    current_piece.blocks = test_blocks;
-    current_piece.start_x = 108;
-    current_piece.start_y = 80;
-    current_piece.color = BLUE;
+    srand(53);
+    Piece* current_piece = generate_piece(); 
 
     internal_clock();
     //buttons setup
@@ -218,6 +116,14 @@ int main() {
     next_piece = &piece_L; //copy_piece(&piece_L)
     hold_piece = &piece_O; //tmp for testing
     draw_hold_piece(hold_piece, 0); //tmp for testing
+    create_first_piece(current_piece);
+    nano_wait(100000000);
+    nano_wait(100000000);
+    nano_wait(100000000);
+    nano_wait(100000000);
+    rotate_piece_counterclockwise(current_piece);
+    free(current_piece->blocks);
+    free(current_piece);
     while(1){
         //draw_display(); //THIS IS SO SLOW, maybe just redraw the update every update?
         
@@ -244,6 +150,6 @@ int main() {
     }
     
     //draw_piece(current_piece.blocks, current_piece.start_x, current_piece.start_y, current_piece.color);
-    
+
     //command_shell();
 }

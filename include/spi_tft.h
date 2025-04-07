@@ -1,10 +1,19 @@
 #ifndef __SPI_TFT_H__
 #define __SPI_TFT_H__
 
+#define NUM_BLOCKS 4
 typedef struct {
     int x;
     int y;
 } Point;
+
+extern const Point blocks_T[4];
+extern const Point blocks_L[4];
+extern const Point blocks_J[4];
+extern const Point blocks_O[4];
+extern const Point blocks_S[4];
+extern const Point blocks_Z[4];
+extern const Point blocks_I[4];
 
 typedef struct {
     Point* blocks;
@@ -12,6 +21,14 @@ typedef struct {
     int start_y;
     uint16_t color;
 } Piece;
+
+extern Piece piece_J;
+extern Piece piece_L;
+extern Piece piece_I;
+extern Piece piece_O;
+extern Piece piece_S;
+extern Piece piece_Z;
+extern Piece piece_T;
 
 
 void init_usart5();
@@ -37,6 +54,9 @@ void draw_cell(uint16_t base_x, uint16_t base_y, uint16_t color);
 void rotate_piece_clockwise(Piece* p);
 void rotate_piece_counterclockwise(Piece* p);
 void draw_piece(const Point* cells, uint16_t start_x, uint16_t start_y, uint16_t color);
+void create_first_piece(Piece* p);
+Piece* copyPiece(const Piece* src);
+Piece* generate_piece(void);
 
 
 

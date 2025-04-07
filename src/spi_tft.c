@@ -235,6 +235,8 @@ int main() {
 #include <stdio.h>
 #include "lcd.h"
 #include "commands.h"
+#include "buttons.h"
+#include <time.h>
 
 
 #define FIFOSIZE 16
@@ -371,6 +373,16 @@ void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
     }
 }
 
+void create_first_piece(Piece* p) {
+    for (int i = 0; i < 4; i++) {
+        // Calculate the top-left pixel for the cell by scaling the relative grid coordinate
+        // and adding the starting offset.
+        int draw_x = p->start_x + (p->blocks[i].x * 12);
+        int draw_y = p->start_y + (p->blocks[i].y * 12);
+        draw_cell(draw_x, draw_y, p->color);
+    }
+}
+
 void rotate_piece_clockwise(Piece* p) {
     draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
     for(int i=0; i<4; i++){
@@ -389,4 +401,161 @@ void rotate_piece_counterclockwise(Piece* p) {
         (p->blocks)[i].y = -temp;
     }
     draw_piece(p->blocks, p->start_x, p->start_y, p->color);
+}
+
+Piece* copyPiece(const Piece* src) {
+    if (src == NULL) {
+        return NULL;
+    }
+    
+    // Allocate memory for the new Piece structure.
+    Piece* newPiece = malloc(sizeof(Piece));
+    if (newPiece == NULL) {
+        return NULL; // Allocation failed.
+    }
+    
+    // Copy the basic fields.
+    newPiece->start_x = src->start_x;
+    newPiece->start_y = src->start_y;
+    newPiece->color   = src->color;
+    
+    // Allocate memory for the blocks.
+    newPiece->blocks = malloc(NUM_BLOCKS * sizeof(Point));
+    if (newPiece->blocks == NULL) {
+        free(newPiece);
+        return NULL;
+    }
+    
+    // Copy the blocks from the source Piece.
+    memcpy(newPiece->blocks, src->blocks, NUM_BLOCKS * sizeof(Point));
+    
+    return newPiece;
+}
+
+const Point blocks_T[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  0,  -1 }
+};
+
+const Point blocks_L[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  1,  -1 }
+};
+
+const Point blocks_J[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  -1,  -1 }
+};
+
+const Point blocks_O[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    { -1,  1 },
+    {  0,  1 }
+};
+
+const Point blocks_S[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  0, -1 },
+    {  1, -1 }
+};
+
+const Point blocks_Z[4] = {
+    { -1, -1 },
+    {  0,  0 },  // pivot cell
+    {  0, -1 },
+    {  1,  0 }
+};
+
+const Point blocks_I[4] = {
+    { -1,  0 },
+    {  0,  0 },  // pivot cell
+    {  1,  0 },
+    {  2,  0 }
+};
+
+Piece piece_J;
+Piece piece_L;
+Piece piece_I;
+Piece piece_O;
+Piece piece_S;
+Piece piece_Z;
+Piece piece_T;
+
+Piece* generate_piece(void) {
+    piece_J.blocks = blocks_J;
+    piece_J.start_x = 108;
+    piece_J.start_y = 92;
+    piece_J.color = BLUE;
+
+    piece_L.blocks = blocks_L;
+    piece_L.start_x = 108;
+    piece_L.start_y = 92;
+    piece_L.color = ORANGE;
+
+    piece_I.blocks = blocks_I;
+    piece_I.start_x = 108;
+    piece_I.start_y = 80;
+    piece_I.color = CYAN;
+
+    piece_O.blocks = blocks_O;
+    piece_O.start_x = 108;
+    piece_O.start_y = 80;
+    piece_O.color = YELLOW;
+
+    piece_S.blocks = blocks_S;
+    piece_S.start_x = 108;
+    piece_S.start_y = 92;
+    piece_S.color = GREEN;
+
+    piece_Z.blocks = blocks_Z;
+    piece_Z.start_x = 108;
+    piece_Z.start_y = 92;
+    piece_Z.color = RED;
+
+    piece_T.blocks = blocks_T;
+    piece_T.start_x = 108;
+    piece_T.start_y = 92;
+    piece_T.color = PURPLE;
+    // Generate a random integer from 1 to 7.
+    int r = rand() % 7 + 1;
+    
+    Piece* newPiece = NULL;
+    
+    switch (r) {
+        case 1:
+            newPiece = copyPiece(&piece_I);
+            break;
+        case 2:
+            newPiece = copyPiece(&piece_J);
+            break;
+        case 3:
+            newPiece = copyPiece(&piece_L);
+            break;
+        case 4:
+            newPiece = copyPiece(&piece_O);
+            break;
+        case 5:
+            newPiece = copyPiece(&piece_S);
+            break;
+        case 6:
+            newPiece = copyPiece(&piece_T);
+            break;
+        case 7:
+            newPiece = copyPiece(&piece_Z);
+            break;
+        default:
+            // Should never happen, but just in case...
+            newPiece = NULL;
+            break;
+    }
+    
+    return newPiece;
 }
