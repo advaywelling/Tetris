@@ -41,7 +41,7 @@ void setup_dma(void) {
     DMA1_Channel3->CCR |= DMA_CCR_EN;
 }
 
-void tetris_sound(void) {
+void tetris_end_sound(void) {
     int duration = RATE / 4;
     int idx = 0;
     for (int i = 0; i <= 3; i++) {
@@ -53,7 +53,7 @@ void tetris_sound(void) {
     }
 }
 
-void background_music(void) {
+void tetris_start_sound(void) {
     const int music_freq[] = {800, 900, 1000};
     int num = sizeof(music_freq) / sizeof(music_freq[0]);
     int duration = RATE / num;
@@ -63,17 +63,33 @@ void background_music(void) {
         for (int j = 0; j < duration && idx < RATE; j++) {
             double k = (double)j / RATE;
             double sample = sin(2 * M_PI * freq * k);
-            
+            //unsure
         }
     }
 }
-/*
+
+void background_music(void) {
+    double freq = 220.0;
+    for (int i = 0; i < 8000; i++) {
+        double t = (double) i / RATE;
+        double sample = sin(2 * M_PI * freq * t);
+        audio[i] = (uint16_t)((sample + 1.0) * 2047.5);
+    }
+}
+
 int main(void) {
     setup_dac();
     setup_dma();
     init_tim6();
-    tetris_sound();
-    while (1) {
+    uint32_t button = 0;
+    for (int i = 5; i <= 10; i++) {
+        button |= (1 << i);
     }
+    while ((GPIOA->IDR & button) == 0) {
+
+    }
+    tetris_start_sound();
+    delay(10000);
+    background_music();
     return 0;
-}*/
+}
