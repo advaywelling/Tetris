@@ -89,8 +89,6 @@ void draw_hold_piece(Piece* p, int clear){
 }
 
 int main() {
-    srand(53);
-    Piece* current_piece = generate_piece(); 
 
     internal_clock();
     //buttons setup
@@ -116,11 +114,25 @@ int main() {
     next_piece = &piece_L; //copy_piece(&piece_L)
     hold_piece = &piece_O; //tmp for testing
     draw_hold_piece(hold_piece, 0); //tmp for testing
+
+    srand(14); 
+    Piece* current_piece = generate_piece();
     create_first_piece(current_piece);
-    nano_wait(100000000);
-    nano_wait(100000000);
-    nano_wait(100000000);
-    nano_wait(100000000);
+    nano_wait(500000000);
+    nano_wait(500000000);
+    nano_wait(500000000);
+    rotate_piece_counterclockwise(current_piece);
+    nano_wait(500000000);
+    nano_wait(500000000);
+    shift_piece_left(current_piece);
+    nano_wait(500000000);
+    nano_wait(500000000);
+    shift_piece_down(current_piece);
+    nano_wait(500000000);
+    nano_wait(500000000);
+    shift_piece_down(current_piece);
+    nano_wait(500000000);
+    nano_wait(500000000);
     rotate_piece_counterclockwise(current_piece);
     free(current_piece->blocks);
     free(current_piece);

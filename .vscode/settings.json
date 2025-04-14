@@ -5,6 +5,7 @@
         "commands.h": "c",
         "buttons.h": "c",
         "stm32f0xx.h": "c",
-        "tty.h": "c"
+        "tty.h": "c",
+        "stdint.h": "c"
     }
 }

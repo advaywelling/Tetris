@@ -240,6 +240,12 @@ int main() {
 
 
 #define FIFOSIZE 16
+#define CELL_SIZE 12
+#define LEFT_BOUNDARY   60
+#define RIGHT_BOUNDARY  180
+#define TOP_BOUNDARY    80
+#define BOTTOM_BOUNDARY 320
+
 char serfifo[FIFOSIZE];
 int seroffset = 0;
 
@@ -365,8 +371,6 @@ void draw_cell(uint16_t base_x, uint16_t base_y, uint16_t color) {
 
 void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
     for (int i = 0; i < 4; i++) {
-        // Calculate the top-left pixel for the cell by scaling the relative grid coordinate
-        // and adding the starting offset.
         int draw_x = start_x + (cells[i].x * 12);
         int draw_y = start_y + (cells[i].y * 12);
         draw_cell(draw_x, draw_y, color);
@@ -375,30 +379,97 @@ void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
 
 void create_first_piece(Piece* p) {
     for (int i = 0; i < 4; i++) {
-        // Calculate the top-left pixel for the cell by scaling the relative grid coordinate
-        // and adding the starting offset.
         int draw_x = p->start_x + (p->blocks[i].x * 12);
         int draw_y = p->start_y + (p->blocks[i].y * 12);
         draw_cell(draw_x, draw_y, p->color);
     }
 }
 
+int is_piece_in_bounds(const Piece* p) {
+    for (int i = 0; i < NUM_BLOCKS; i++) {
+        int x = p->start_x + (p->blocks[i].x * CELL_SIZE);
+        int y = p->start_y + (p->blocks[i].y * CELL_SIZE);
+        if (x < LEFT_BOUNDARY || (x + CELL_SIZE) > RIGHT_BOUNDARY)
+            return 0;
+        if (y < TOP_BOUNDARY || (y + CELL_SIZE) > BOTTOM_BOUNDARY)
+            return 0;
+    }
+    return 1;
+}
+
 void rotate_piece_clockwise(Piece* p) {
+    if(p->color == YELLOW){
+        return;
+    }
+    Point old_blocks[NUM_BLOCKS];
+    for (int i = 0; i < NUM_BLOCKS; i++) {
+        old_blocks[i] = p->blocks[i];
+    }
+
     draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
+
     for(int i=0; i<4; i++){
         int temp = (p->blocks)[i].x;
         (p->blocks)[i].x = -((p->blocks)[i].y);
         (p->blocks)[i].y = temp;
     }
+    if (!is_piece_in_bounds(p)) {
+        for (int i = 0; i < NUM_BLOCKS; i++) {
+            p->blocks[i] = old_blocks[i];
+        }
+    }
     draw_piece(p->blocks, p->start_x, p->start_y, p->color);
 }
 
 void rotate_piece_counterclockwise(Piece* p) {
+    if(p->color == YELLOW){
+        return;
+    }
+    Point old_blocks[NUM_BLOCKS];
+    for (int i = 0; i < NUM_BLOCKS; i++) {
+        old_blocks[i] = p->blocks[i];
+    }
+
     draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
     for(int i=0; i<4; i++){
         int temp = (p->blocks)[i].x;
         (p->blocks)[i].x = (p->blocks)[i].y;
         (p->blocks)[i].y = -temp;
+    }
+    if (!is_piece_in_bounds(p)) {
+        for (int i = 0; i < NUM_BLOCKS; i++) {
+            p->blocks[i] = old_blocks[i];
+        }
+    }
+    draw_piece(p->blocks, p->start_x, p->start_y, p->color);
+}
+
+void shift_piece_right(Piece *p){
+    draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
+    int old_start_x = p->start_x;
+    p->start_x += CELL_SIZE;
+    if(!is_piece_in_bounds(p)){
+        p->start_x = old_start_x;
+    }
+    draw_piece(p->blocks, p->start_x, p->start_y, p->color);
+}
+
+void shift_piece_left(Piece *p){
+    draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
+    int old_start_x = p->start_x;
+    p->start_x -= CELL_SIZE;
+    if(!is_piece_in_bounds(p)){
+        p->start_x = old_start_x;
+    }
+    draw_piece(p->blocks, p->start_x, p->start_y, p->color);
+}
+
+void shift_piece_down(Piece *p){
+    draw_piece(p->blocks, p->start_x, p->start_y, 0x0000);
+    int old_start_x = p->start_x;
+    p->start_y += CELL_SIZE;
+    if(!is_piece_in_bounds(p)){
+        p->start_x = old_start_x;
     }
     draw_piece(p->blocks, p->start_x, p->start_y, p->color);
 }
@@ -408,25 +479,21 @@ Piece* copyPiece(const Piece* src) {
         return NULL;
     }
     
-    // Allocate memory for the new Piece structure.
     Piece* newPiece = malloc(sizeof(Piece));
     if (newPiece == NULL) {
-        return NULL; // Allocation failed.
+        return NULL;
     }
     
-    // Copy the basic fields.
     newPiece->start_x = src->start_x;
     newPiece->start_y = src->start_y;
     newPiece->color   = src->color;
     
-    // Allocate memory for the blocks.
     newPiece->blocks = malloc(NUM_BLOCKS * sizeof(Point));
     if (newPiece->blocks == NULL) {
         free(newPiece);
         return NULL;
     }
     
-    // Copy the blocks from the source Piece.
     memcpy(newPiece->blocks, src->blocks, NUM_BLOCKS * sizeof(Point));
     
     return newPiece;
