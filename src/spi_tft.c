@@ -489,6 +489,8 @@ Piece piece_S;
 Piece piece_Z;
 Piece piece_T;
 
+//This is for current_piece but the randomly generated piece should actually be next_piece and then move next_piece to current_piece after hahahahaha...
+//fixed logic to adjust for that, hope nothing broke - Pranav
 Piece* generate_piece(void) {
     piece_J.blocks = blocks_J;
     piece_J.start_x = 108;
@@ -526,7 +528,7 @@ Piece* generate_piece(void) {
     piece_T.color = PURPLE;
     // Generate a random integer from 1 to 7.
     int r = rand() % 7 + 1;
-    
+
     Piece* newPiece = NULL;
     
     switch (r) {

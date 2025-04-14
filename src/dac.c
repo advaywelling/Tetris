@@ -76,7 +76,7 @@ void background_music(void) {
         audio[i] = (uint16_t)((sample + 1.0) * 2047.5);
     }
 }
-
+/*
 int main(void) {
     setup_dac();
     setup_dma();
@@ -93,3 +93,4 @@ int main(void) {
     background_music();
     return 0;
 }
+*/
