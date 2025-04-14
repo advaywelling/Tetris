@@ -56,6 +56,7 @@ void rotate_piece_clockwise(Piece* p);
 void rotate_piece_counterclockwise(Piece* p);
 void shift_piece_right(Piece *p);
 void shift_piece_left(Piece *p);
+void shift_piece_down(Piece *p);
 void draw_piece(const Point* cells, uint16_t start_x, uint16_t start_y, uint16_t color);
 void create_first_piece(Piece* p);
 Piece* copyPiece(const Piece* src);

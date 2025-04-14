@@ -22,7 +22,7 @@ void internal_clock();
 int display[ROWS][COLUMNS];
 
 
-void init_game(){
+void init_game(int color){
     leftButton = 0;
     rightButton = 0;
     downButton = 0;
@@ -31,7 +31,7 @@ void init_game(){
     holdButton = 0;
     for(int i = 0; i < ROWS; i++){
         for(int j = 0; j < COLUMNS; j++){
-            display[i][j] = BLACK;
+            display[i][j] = color;
         }
     }
 }
@@ -42,25 +42,40 @@ void draw_display(){
             LCD_DrawFillRectangle(LEFT_EDGE, TOP_EDGE, LEFT_EDGE + 12*(j+1), TOP_EDGE + 12*(i+1), display[i][j]);
         }
     }
-} 
+}
+
+void draw_start_screen(int color){
+    init_game(BLUE);
+    draw_display();
+}
 
 Piece* next_piece;
 Piece* hold_piece;
+Piece* current_piece;
+Piece* temp_piece;
 
 //call clear w 1 & prev piece to clear before drawing a new piece
 void draw_next_piece(Piece* p, int clear){
     int shift = 0;
+    //o check
     if(p->blocks[0].x == blocks_O[0].x && p->blocks[1].x == blocks_O[1].x
       && p->blocks[2].x == blocks_O[2].x && p->blocks[3].x == blocks_O[3].x &&
       p->blocks[0].y == blocks_O[0].y && p->blocks[1].y == blocks_O[1].y
       && p->blocks[2].y == blocks_O[2].y && p->blocks[3].y == blocks_O[3].y){
         shift = 6;
     }
+    //i check
     if(p->blocks[0].x == blocks_I[0].x && p->blocks[1].x == blocks_I[1].x
         && p->blocks[2].x == blocks_I[2].x && p->blocks[3].x == blocks_I[3].x &&
         p->blocks[0].y == blocks_I[0].y && p->blocks[1].y == blocks_I[1].y
         && p->blocks[2].y == blocks_I[2].y && p->blocks[3].y == blocks_I[3].y){
         shift = -6;
+    }
+    if(p->blocks[0].x == -1*blocks_I[0].x && p->blocks[1].x == -1*blocks_I[1].x
+        && p->blocks[2].x == -1*blocks_I[2].x && p->blocks[3].x == -1*blocks_I[3].x &&
+        p->blocks[0].y == blocks_I[0].y && p->blocks[1].y == blocks_I[1].y
+        && p->blocks[2].y == blocks_I[2].y && p->blocks[3].y == blocks_I[3].y){
+        shift = 12;
     }
     int color = clear == 1 ? BLACK : p->color;
     draw_piece(p->blocks, 186+3+18+shift, 130, color);
@@ -88,7 +103,12 @@ void draw_hold_piece(Piece* p, int clear){
     }
 }
 
+//TODO: set back to 1 to test start menu / full game functionality
+int state = 1;
+
 int main() {
+    srand(31); //TODO: set in case 0 based on time
+    
 
     internal_clock();
     //buttons setup
@@ -101,67 +121,121 @@ int main() {
     setbuf(stderr,0);
     LCD_Setup();
     //game setup
-    init_game();
+    init_game(BLACK);
     LCD_Clear(BLACK);
     draw_title(ORANGE);
     draw_borders(WHITE);
     draw_hold(WHITE);
     draw_score(WHITE);
     draw_next(WHITE);
-    //game logic
-    //draw_display()
+    current_piece = NULL;
+    next_piece = NULL;
     hold_piece = NULL;
-    next_piece = &piece_L; //copy_piece(&piece_L)
-    hold_piece = &piece_O; //tmp for testing
-    draw_hold_piece(hold_piece, 0); //tmp for testing
 
-    srand(14); 
-    Piece* current_piece = generate_piece();
-    create_first_piece(current_piece);
-    nano_wait(500000000);
-    nano_wait(500000000);
-    nano_wait(500000000);
-    rotate_piece_counterclockwise(current_piece);
-    nano_wait(500000000);
-    nano_wait(500000000);
-    shift_piece_left(current_piece);
-    nano_wait(500000000);
-    nano_wait(500000000);
-    shift_piece_down(current_piece);
-    nano_wait(500000000);
-    nano_wait(500000000);
-    shift_piece_down(current_piece);
-    nano_wait(500000000);
-    nano_wait(500000000);
-    rotate_piece_counterclockwise(current_piece);
-    free(current_piece->blocks);
-    free(current_piece);
+    //draw_display()
+    int cnt = 0;
+    //actual game
     while(1){
-        //draw_display(); //THIS IS SO SLOW, maybe just redraw the update every update?
-        
-        draw_next_piece(next_piece, 0); //can make this conditional once we create new piece gen
-        
-        if(holdButton){
-            draw_hold_piece(hold_piece, 1);
-            if(hold_piece == NULL){
-                //hold_piece = curr_piece
-                //curr_piece = next_piece
-                //generate new next piece
-            }
-            else{
-                //curr_piece = temp
-                //curr_piece = hold_piece
-                //hold_piece = temp
-            }
-            hold_piece = next_piece; //temp logic to test buttons
-            holdButton = 0;
-            draw_hold_piece(hold_piece, 0);
-            draw_next_piece(next_piece, 1);
-            next_piece = &piece_T;
-        }
-    }
-    
-    //draw_piece(current_piece.blocks, current_piece.start_x, current_piece.start_y, current_piece.color);
+        switch(state){
+            //title screen
+            case 0: 
+                //TODO: restart timer
+                draw_start_screen(WHITE);
+                if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
+                    state = 1;
+                    init_game(BLACK);
+                    draw_display();
+                    nano_wait(500000000);
+                }
+                break;
+            //playing game
+            case 1:
+                //TODO: set srand + stop timer
+                //TODO: srand(TIME)
+                if(next_piece == NULL) next_piece = generate_piece();
+                if(current_piece == NULL) current_piece = generate_piece();
+                draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
+                draw_next_piece(next_piece, 0);  
 
-    //command_shell();
+                if(rotLeftButton){
+                    rotate_piece_counterclockwise(current_piece);
+                    rotLeftButton = 0;
+                }
+                else if(rotRightButton){
+                    rotate_piece_clockwise(current_piece);
+                    rotRightButton = 0;
+                }
+
+                if(leftButton){
+                    shift_piece_left(current_piece);
+                    leftButton = 0;
+                }
+                else if(rightButton){
+                    shift_piece_right(current_piece);
+                    rightButton = 0;
+                }
+
+                if(downButton){
+                    //TODO: calculate bottom position, this will drop fully down
+
+                    shift_piece_down(current_piece); //remove this, temp
+                    
+                    cnt++; //temp
+                    if(cnt == 15){
+                        //new piece gen
+                        draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, BLACK);
+                        current_piece = next_piece;
+                        draw_next_piece(next_piece, 1);
+                        next_piece = NULL; //gens next cycle of while loop
+                        cnt = 0;
+                    }
+                    downButton = 0;
+                }
+
+                if(holdButton){
+                    draw_hold_piece(hold_piece, 1); //clears old piece
+                    if(hold_piece == NULL){
+                        hold_piece = current_piece;
+                        draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, BLACK);
+                        next_piece->start_x = current_piece->start_x;
+                        next_piece->start_y = current_piece->start_y;
+                        current_piece = next_piece;
+                        draw_next_piece(next_piece, 1);
+                        next_piece = generate_piece();
+                        draw_next_piece(next_piece, 1);
+                    }
+                    else{
+                        draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, BLACK);
+                        hold_piece->start_x = current_piece->start_x;
+                        hold_piece->start_y = current_piece->start_y;
+                        temp_piece = current_piece;
+                        current_piece = hold_piece;
+                        hold_piece = temp_piece;
+                    }
+                    holdButton = 0;
+                    draw_hold_piece(hold_piece, 0); //draws new piece
+                }
+                break;
+            //end screen
+            case 2: 
+                if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
+                    state = 1;
+                    init_game(BLACK);
+                    draw_display();
+                }
+                break;
+            //error state (shouldn't ever enter)
+            case 3: 
+                init_game(RED);
+                draw_display();
+                nano_wait(10000000000);
+                state = 0;
+                break;
+            //shouldn't enter
+            default: 
+                state = 3;
+                break;
+        }
+
+    }
 }
