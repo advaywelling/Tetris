@@ -103,12 +103,40 @@ void draw_hold_piece(Piece* p, int clear){
     }
 }
 
+//returns 1 for touched bottom, 0 if in air 
+int check_bottom(Piece* p){
+    int x = (p->start_x - 60) / 12;
+    int y = (p->start_y-80) / 12;
+
+    for(int i = 0; i < 4; i++){
+        if(y+p->blocks[i].y + 1 > 19 || display[y + p->blocks[i].y + 1][x + p->blocks[i].x] != BLACK){
+            for(int j = 0; j < 4; j++){
+                display[y+p->blocks[j].y][x+p->blocks[j].x] = p->color;
+            }
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void check_line_clear(){
+    for(int i = 0; i < ROWS; i++){
+        for(int j = 0; j < COLUMNS; j++){
+            if(display[i][j] == BLACK){
+                break;
+            }
+            if(j == COLUMNS - 1){
+                //clear line
+            }
+        }
+    }
+}
+
 //TODO: set back to 1 to test start menu / full game functionality
 int state = 1;
-
+int cnt = 0;
 int main() {
-    srand(31); //TODO: set in case 0 based on time
-    
+    srand(31);
 
     internal_clock();
     //buttons setup
@@ -133,7 +161,6 @@ int main() {
     hold_piece = NULL;
 
     //draw_display()
-    int cnt = 0;
     //actual game
     while(1){
         switch(state){
@@ -151,11 +178,30 @@ int main() {
             //playing game
             case 1:
                 //TODO: set srand + stop timer
-                //TODO: srand(TIME)
+                
                 if(next_piece == NULL) next_piece = generate_piece();
                 if(current_piece == NULL) current_piece = generate_piece();
                 draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
                 draw_next_piece(next_piece, 0);  
+                
+                if(check_bottom(current_piece)){
+                    draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
+                    // free(current_piece->blocks);
+                    // free(current_piece);
+                    //TODO: save struct somewhere for line clearing, can't just free it.
+                    if(check_bottom(next_piece)){
+                        state = 2;
+                    }
+                    current_piece = next_piece;
+                    draw_next_piece(next_piece, 1);
+                    next_piece = NULL; //gens next cycle of while loop
+                }
+                cnt++;
+                if(cnt > 300){
+                    shift_piece_down(current_piece);
+                    cnt = 0;
+                }
+                nano_wait(500000);
 
                 if(rotLeftButton){
                     rotate_piece_counterclockwise(current_piece);
@@ -176,23 +222,15 @@ int main() {
                 }
 
                 if(downButton){
-                    //TODO: calculate bottom position, this will drop fully down
-
-                    shift_piece_down(current_piece); //remove this, temp
-                    
-                    cnt++; //temp
-                    if(cnt == 15){
-                        //new piece gen
-                        draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, BLACK);
-                        current_piece = next_piece;
-                        draw_next_piece(next_piece, 1);
-                        next_piece = NULL; //gens next cycle of while loop
-                        cnt = 0;
+                    //this will drop fully down
+                    while(!check_bottom(current_piece)){
+                        shift_piece_down(current_piece);
                     }
+                 
                     downButton = 0;
                 }
 
-                if(holdButton){
+                else if(holdButton){
                     draw_hold_piece(hold_piece, 1); //clears old piece
                     if(hold_piece == NULL){
                         hold_piece = current_piece;
@@ -218,11 +256,11 @@ int main() {
                 break;
             //end screen
             case 2: 
-                if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
-                    state = 1;
-                    init_game(BLACK);
-                    draw_display();
-                }
+                // if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
+                //     state = 1;
+                //     init_game(BLACK);
+                //     draw_display();
+                // }
                 break;
             //error state (shouldn't ever enter)
             case 3: 
