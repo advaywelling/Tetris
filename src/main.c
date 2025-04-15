@@ -132,6 +132,8 @@ void check_line_clear(){
     }
 }
 
+
+
 //TODO: set back to 1 to test start menu / full game functionality
 int state = 1;
 int cnt = 0;
@@ -225,6 +227,7 @@ int main() {
                     //this will drop fully down
                     while(!check_bottom(current_piece)){
                         shift_piece_down(current_piece);
+                        nano_wait(70000000);
                     }
                  
                     downButton = 0;
