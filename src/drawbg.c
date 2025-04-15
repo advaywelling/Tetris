@@ -6,8 +6,8 @@
 #define RIGHT_EDGE 180
 void draw_borders(int color){
     LCD_DrawFillRectangle(0, TOP_EDGE-6, 240, TOP_EDGE-1, color);
-    LCD_DrawFillRectangle(LEFT_EDGE-6, TOP_EDGE, LEFT_EDGE-1, 320, color);
-    LCD_DrawFillRectangle(RIGHT_EDGE+1, TOP_EDGE, RIGHT_EDGE+6, BOT_EDGE, color);
+    LCD_DrawFillRectangle(LEFT_EDGE-6, TOP_EDGE, LEFT_EDGE-2, 320, color);
+    LCD_DrawFillRectangle(RIGHT_EDGE-1, TOP_EDGE, RIGHT_EDGE+4, BOT_EDGE, color);
 }
 
 void draw_title(int color){

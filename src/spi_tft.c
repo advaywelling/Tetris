@@ -366,26 +366,27 @@ void init_lcd_spi(){
 
 
 void draw_cell(uint16_t base_x, uint16_t base_y, uint16_t color) {
-    LCD_DrawFillRectangle(base_x, base_y, base_x + 12, base_y + 12, color);
+    LCD_DrawFillRectangle(base_x, base_y, base_x + 11, base_y + 11, color);
 }
 
 void draw_piece(const Point* cells, u16 start_x, u16 start_y, u16 color) {
     for (int i = 0; i < 4; i++) {
-        int draw_x = start_x + (cells[i].x * 12);
-        int draw_y = start_y + (cells[i].y * 12);
+        int draw_x = start_x + (cells[i].x * 12) - 1;
+        int draw_y = start_y + (cells[i].y * 12) - 1;
         draw_cell(draw_x, draw_y, color);
     }
 }
 
 void create_first_piece(Piece* p) {
     for (int i = 0; i < 4; i++) {
-        int draw_x = p->start_x + (p->blocks[i].x * 12);
-        int draw_y = p->start_y + (p->blocks[i].y * 12);
+        int draw_x = p->start_x + (p->blocks[i].x * 12) - 1;
+        int draw_y = p->start_y + (p->blocks[i].y * 12) - 1;
         draw_cell(draw_x, draw_y, p->color);
     }
 }
 
 int is_piece_in_bounds(const Piece* p) {
+    // TODO: check for diplay as well
     for (int i = 0; i < NUM_BLOCKS; i++) {
         int x = p->start_x + (p->blocks[i].x * CELL_SIZE);
         int y = p->start_y + (p->blocks[i].y * CELL_SIZE);
@@ -559,37 +560,37 @@ Piece piece_T;
 Piece* generate_piece(void) {
     piece_J.blocks = blocks_J;
     piece_J.start_x = 108;
-    piece_J.start_y = 92;
+    piece_J.start_y = 93;
     piece_J.color = BLUE;
 
     piece_L.blocks = blocks_L;
     piece_L.start_x = 108;
-    piece_L.start_y = 92;
+    piece_L.start_y = 93;
     piece_L.color = ORANGE;
 
     piece_I.blocks = blocks_I;
     piece_I.start_x = 108;
-    piece_I.start_y = 80;
+    piece_I.start_y = 81;
     piece_I.color = CYAN;
 
     piece_O.blocks = blocks_O;
     piece_O.start_x = 108;
-    piece_O.start_y = 80;
+    piece_O.start_y = 81;
     piece_O.color = YELLOW;
 
     piece_S.blocks = blocks_S;
     piece_S.start_x = 108;
-    piece_S.start_y = 92;
+    piece_S.start_y = 93;
     piece_S.color = GREEN;
 
     piece_Z.blocks = blocks_Z;
     piece_Z.start_x = 108;
-    piece_Z.start_y = 92;
+    piece_Z.start_y = 93;
     piece_Z.color = RED;
 
     piece_T.blocks = blocks_T;
     piece_T.start_x = 108;
-    piece_T.start_y = 92;
+    piece_T.start_y = 93;
     piece_T.color = PURPLE;
     // Generate a random integer from 1 to 7.
     int r = rand() % 7 + 1;

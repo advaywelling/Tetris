@@ -106,7 +106,7 @@ void draw_hold_piece(Piece* p, int clear){
 //returns 1 for touched bottom, 0 if in air 
 int check_bottom(Piece* p){
     int x = (p->start_x - 60) / 12;
-    int y = (p->start_y-80) / 12;
+    int y = (p->start_y - 80) / 12;
 
     for(int i = 0; i < 4; i++){
         if(y+p->blocks[i].y + 1 > 19 || display[y + p->blocks[i].y + 1][x + p->blocks[i].x] != BLACK){

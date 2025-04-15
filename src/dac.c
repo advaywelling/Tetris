@@ -77,7 +77,7 @@ void background_music(void) {
     }
 }
 
-int main(void) {
+/*int main(void) {
     setup_dac();
     setup_dma();
     init_tim6();
@@ -92,4 +92,4 @@ int main(void) {
     delay(10000);
     background_music();
     return 0;
-}
+}*/
