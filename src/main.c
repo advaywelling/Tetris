@@ -206,7 +206,7 @@ int main() {
     //game setup
     init_game(BLACK);
     LCD_Clear(BLACK);
-    draw_title(ORANGE);
+    //draw_title(ORANGE);
     draw_borders(WHITE);
     draw_hold(WHITE);
     draw_score(WHITE);
@@ -338,7 +338,7 @@ int main() {
             //end screen
             case 2: 
                 LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
-                nano_wait(2000000000);
+                nano_wait(500000000);
                 clearButtons();
                 while(!(rightButton || leftButton || rotLeftButton)){
                     LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
