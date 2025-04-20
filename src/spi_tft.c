@@ -390,7 +390,9 @@ int is_piece_in_bounds(const Piece* p) {
     for (int i = 0; i < NUM_BLOCKS; i++) {
         int x = p->start_x + (p->blocks[i].x * CELL_SIZE);
         int y = p->start_y + (p->blocks[i].y * CELL_SIZE);
-        if (x < LEFT_BOUNDARY || (x + CELL_SIZE) > RIGHT_BOUNDARY)
+        int col  = (x-60) / 12;
+        int row = (y-80)/12; 
+        if (x < LEFT_BOUNDARY || (x + CELL_SIZE) > RIGHT_BOUNDARY || display[row][col] != BLACK)
             return 0;
         if (y < TOP_BOUNDARY || (y + CELL_SIZE) > BOTTOM_BOUNDARY)
             return 0;

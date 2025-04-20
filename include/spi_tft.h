@@ -2,6 +2,10 @@
 #define __SPI_TFT_H__
 
 #define NUM_BLOCKS 4
+
+#define COLUMNS 10
+#define ROWS 20
+int display[ROWS][COLUMNS];
 typedef struct {
     int x;
     int y;

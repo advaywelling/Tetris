@@ -12,14 +12,12 @@
 
 void internal_clock();
 
-#define COLUMNS 10
-#define ROWS 20
 #define TOP_EDGE 80
 #define LEFT_EDGE 60
 #define BOT_EDGE 320
 #define RIGHT_EDGE 180
 
-int display[ROWS][COLUMNS];
+
 
 
 void init_game(int color){
@@ -137,6 +135,7 @@ void check_line_clear(){
 //TODO: set back to 1 to test start menu / full game functionality
 int state = 1;
 int cnt = 0;
+int holdcycle = 1;
 int main() {
     srand(31);
 
@@ -188,9 +187,9 @@ int main() {
                 
                 if(check_bottom(current_piece)){
                     draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
-                    // free(current_piece->blocks);
-                    // free(current_piece);
-                    //TODO: save struct somewhere for line clearing, can't just free it.
+                    free(current_piece->blocks);
+                    free(current_piece);
+                    holdcycle = 1;
                     if(check_bottom(next_piece)){
                         state = 2;
                     }
@@ -229,29 +228,31 @@ int main() {
                         shift_piece_down(current_piece);
                         nano_wait(70000000);
                     }
-                 
+                    holdcycle = 1;
                     downButton = 0;
                 }
 
                 else if(holdButton){
                     draw_hold_piece(hold_piece, 1); //clears old piece
-                    if(hold_piece == NULL){
+                    if(hold_piece == NULL && holdcycle != 0){
                         hold_piece = current_piece;
                         draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, BLACK);
-                        next_piece->start_x = current_piece->start_x;
-                        next_piece->start_y = current_piece->start_y;
+                        next_piece->start_x = 108;
+                        next_piece->start_y =  (next_piece->color == YELLOW) ? 81 : 93;
                         current_piece = next_piece;
                         draw_next_piece(next_piece, 1);
                         next_piece = generate_piece();
                         draw_next_piece(next_piece, 1);
+                        holdcycle = 0;
                     }
-                    else{
+                    else if(holdcycle != 0){
                         draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, BLACK);
-                        hold_piece->start_x = current_piece->start_x;
-                        hold_piece->start_y = current_piece->start_y;
+                        hold_piece->start_x = 108;
+                        hold_piece->start_y = (hold_piece->color == YELLOW) ? 81 :  93;
                         temp_piece = current_piece;
                         current_piece = hold_piece;
                         hold_piece = temp_piece;
+                        holdcycle = 0;
                     }
                     holdButton = 0;
                     draw_hold_piece(hold_piece, 0); //draws new piece
