@@ -223,7 +223,11 @@ int main() {
                 //TODO: clear score function (draw black box below score on the mid left)
                 title_color = generate_color();
                 draw_title(title_color);
-                
+                LCD_DrawString(69, 140, WHITE, BLACK, "Press Right", 19, 0);
+                LCD_DrawString(82, 160, WHITE, BLACK, "To START", 19, 0);
+                LCD_DrawString(62, 190, WHITE, BLACK, "Left: Controls", 17, 0);
+                nano_wait(500000000);
+                clearButtons();
                 while(!(leftButton || rightButton || rotLeftButton)){
                     LCD_DrawString(69, 140, WHITE, BLACK, "Press Right", 19, 0);
                     LCD_DrawString(82, 160, WHITE, BLACK, "To START", 19, 0);
@@ -333,6 +337,9 @@ int main() {
                 break;
             //end screen
             case 2: 
+                LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
+                nano_wait(2000000000);
+                clearButtons();
                 while(!(rightButton || leftButton || rotLeftButton)){
                     LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
                     LCD_DrawString(69, 170, RED, BLACK, "Press Right", 19, 0);
