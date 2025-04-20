@@ -262,6 +262,10 @@ int main() {
                     holdcycle = 1;
                     check_line_clear();
                     if(check_bottom(next_piece)){
+                        draw_hold_piece(hold_piece, 1); //untested
+                        free(hold_piece->blocks); //untested
+                        free(hold_piece); //untested
+                        hold_piece = NULL;
                         clearButtons();
                         state = 2;
                     }
