@@ -241,7 +241,7 @@ int main() {
 
 #define FIFOSIZE 16
 #define CELL_SIZE 12
-#define LEFT_BOUNDARY   60
+#define LEFT_BOUNDARY   59
 #define RIGHT_BOUNDARY  180
 #define TOP_BOUNDARY    80
 #define BOTTOM_BOUNDARY 320

@@ -1,9 +1,8 @@
+#include "drawbg.h"
+
 #define COLUMNS 10
 #define ROWS 20
-#define TOP_EDGE 80
-#define LEFT_EDGE 60
-#define BOT_EDGE 320
-#define RIGHT_EDGE 180
+
 void draw_borders(int color){
     LCD_DrawFillRectangle(0, TOP_EDGE-6, 240, TOP_EDGE-1, color);
     LCD_DrawFillRectangle(LEFT_EDGE-6, TOP_EDGE, LEFT_EDGE-2, 320, color);

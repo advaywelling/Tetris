@@ -12,13 +12,14 @@
 
 void internal_clock();
 
-#define TOP_EDGE 80
-#define LEFT_EDGE 60
-#define BOT_EDGE 320
-#define RIGHT_EDGE 180
-
-
-
+void clearButtons(){
+    rightButton = 0;
+    leftButton = 0;
+    downButton = 0;
+    holdButton = 0;
+    rotRightButton = 0;
+    rotLeftButton = 0;
+}
 
 void init_game(int color){
     leftButton = 0;
@@ -37,14 +38,9 @@ void init_game(int color){
 void draw_display(){
     for(int i = 0; i < ROWS; i++){
         for(int j = 0; j < COLUMNS; j++){
-            LCD_DrawFillRectangle(LEFT_EDGE, TOP_EDGE, LEFT_EDGE + 12*(j+1), TOP_EDGE + 12*(i+1), display[i][j]);
+            draw_cell(LEFT_EDGE - 1 + 12*j, TOP_EDGE + 12*i, display[i][j]);
         }
     }
-}
-
-void draw_start_screen(int color){
-    init_game(BLUE);
-    draw_display();
 }
 
 Piece* next_piece;
@@ -101,6 +97,46 @@ void draw_hold_piece(Piece* p, int clear){
     }
 }
 
+
+void clear_line(int r){
+    for(int i = 0; i < COLUMNS; i++){
+        display[r][i] = BLACK; 
+    }
+    draw_display();
+}
+
+void shiftDown(int r){
+    for(int row = r; row > 0; row--){
+        
+        for(int col = 0; col < COLUMNS; col++){
+            display[row][col] = display[row-1][col];
+        }
+    }
+}
+
+//TODO: SCOREEEEEEEEEEEEEEEEEEEE
+void check_line_clear(){
+    int lineFilled = 1;
+
+    for(int r = ROWS - 1; r >= 0; r--){
+        lineFilled = 1;
+
+        for(int c = 0; c < COLUMNS; c++){
+
+            if(display[r][c] == BLACK){
+                lineFilled = 0;
+                break;
+            }
+        }
+        if(lineFilled == 1){
+            clear_line(r);
+            shiftDown(r);
+            clear_line(0);
+            r++;
+        }
+    }
+}
+
 //returns 1 for touched bottom, 0 if in air 
 int check_bottom(Piece* p){
     int x = (p->start_x - 60) / 12;
@@ -111,34 +147,52 @@ int check_bottom(Piece* p){
             for(int j = 0; j < 4; j++){
                 display[y+p->blocks[j].y][x+p->blocks[j].x] = p->color;
             }
+            check_line_clear();
             return 1;
         }
     }
     return 0;
 }
 
-void check_line_clear(){
-    for(int i = 0; i < ROWS; i++){
-        for(int j = 0; j < COLUMNS; j++){
-            if(display[i][j] == BLACK){
-                break;
-            }
-            if(j == COLUMNS - 1){
-                //clear line
-            }
-        }
+int generate_color(void){
+    int r = rand() % 7 + 1;
+    int color;
+    switch (r) {
+        case 1:
+            color = CYAN;
+            break;
+        case 2:
+            color = YELLOW;
+            break;
+        case 3:
+            color = PURPLE;
+            break;
+        case 4:
+            color = ORANGE;
+            break;
+        case 5:
+            color = BLUE;
+            break;
+        case 6:
+            color = RED;
+            break;
+        case 7:
+            color = GREEN;
+            break;
+        default:
+            color = WHITE;
+            break;
     }
+    return color;
 }
 
-
-
-//TODO: set back to 1 to test start menu / full game functionality
-int state = 1;
+//TODO: set back to 0 or 1 to test start menu or pure game functionality
+int state = 0;
 int cnt = 0;
 int holdcycle = 1;
+int title_color;
 int main() {
     srand(31);
-
     internal_clock();
     //buttons setup
     setup_TIM2();
@@ -160,37 +214,51 @@ int main() {
     current_piece = NULL;
     next_piece = NULL;
     hold_piece = NULL;
-
-    //draw_display()
+    draw_display();
     //actual game
     while(1){
         switch(state){
             //title screen
             case 0: 
-                //TODO: restart timer
-                draw_start_screen(WHITE);
-                if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
+                //TODO: clear score function (draw black box below score on the mid left)
+                title_color = generate_color();
+                draw_title(title_color);
+                
+                while(!(leftButton || rightButton || rotLeftButton)){
+                    LCD_DrawString(69, 140, WHITE, BLACK, "Press Right", 19, 0);
+                    LCD_DrawString(82, 160, WHITE, BLACK, "To START", 19, 0);
+                    LCD_DrawString(62, 190, WHITE, BLACK, "Left: Controls", 17, 0);
+                    LCD_DrawString(69, 240, WHITE, BLACK, "High Score:", 19, 0);
+                }
+                if(rightButton){
+                    srand(TIM2->CNT);
                     state = 1;
-                    init_game(BLACK);
+                    cnt = 0;
                     draw_display();
-                    nano_wait(500000000);
+                    clearButtons();
+                }
+                if(leftButton || rotLeftButton){
+                    state = 4;
+                    draw_display();
+                    clearButtons();
+                    
                 }
                 break;
             //playing game
             case 1:
-                //TODO: set srand + stop timer
-                
                 if(next_piece == NULL) next_piece = generate_piece();
                 if(current_piece == NULL) current_piece = generate_piece();
                 draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
                 draw_next_piece(next_piece, 0);  
                 
                 if(check_bottom(current_piece)){
-                    draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
+                    draw_display();
                     free(current_piece->blocks);
                     free(current_piece);
                     holdcycle = 1;
+                    check_line_clear();
                     if(check_bottom(next_piece)){
+                        clearButtons();
                         state = 2;
                     }
                     current_piece = next_piece;
@@ -228,8 +296,13 @@ int main() {
                         shift_piece_down(current_piece);
                         nano_wait(70000000);
                     }
+                    check_line_clear();
+                    current_piece = next_piece;
+                    draw_next_piece(next_piece, 1);
+                    next_piece = NULL; //gens next cycle of while loop
                     holdcycle = 1;
                     downButton = 0;
+                    cnt = 0;
                 }
 
                 else if(holdButton){
@@ -260,11 +333,26 @@ int main() {
                 break;
             //end screen
             case 2: 
-                // if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
-                //     state = 1;
-                //     init_game(BLACK);
-                //     draw_display();
-                // }
+                while(!(rightButton || leftButton || rotLeftButton)){
+                    LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
+                    LCD_DrawString(69, 170, RED, BLACK, "Press Right", 19, 0);
+                    LCD_DrawString(82, 190, RED, BLACK, "To  MENU", 17, 0);
+                    LCD_DrawString(69, 230, RED, BLACK, "High Score:", 19, 0);
+                    //TODO: room for score, also ctrlf for "high score" in case theres more e.g. menu screen too
+                    LCD_DrawString(60, 300, RED, BLACK, "Left: How to Play", 15, 0);
+                }
+                if(rightButton){
+                    state = 0;
+                    init_game(BLACK);
+                    draw_display();
+                    clearButtons();
+                }
+                if(rotLeftButton || leftButton){
+                    state = 5;
+                    init_game(BLACK);
+                    draw_display();
+                    clearButtons();
+                }
                 break;
             //error state (shouldn't ever enter)
             case 3: 
@@ -272,6 +360,42 @@ int main() {
                 draw_display();
                 nano_wait(10000000000);
                 state = 0;
+                break;
+
+            //controls
+            case 4:
+                while(!rightButton){
+                    LCD_DrawString(60, 120, WHITE, BLACK, "--Left to Right--", 15, 0);
+                    LCD_DrawString(69, 140, WHITE, BLACK, "Rotate Left", 19, 0);
+                    LCD_DrawString(69, 160, WHITE, BLACK, "Hold", 19, 0);
+                    LCD_DrawString(69, 180, WHITE, BLACK, "Rotate Right", 19, 0);
+                    LCD_DrawString(69, 200, WHITE, BLACK, "Move Left", 19, 0);
+                    LCD_DrawString(69, 220, WHITE, BLACK, "Move Down", 19, 0);
+                    LCD_DrawString(69, 240, WHITE, BLACK, "Move Right", 19, 0);
+                    LCD_DrawString(69, 280, WHITE, BLACK, "Press Right", 19, 0);
+                    LCD_DrawString(82, 300, WHITE, BLACK, "To  MENU", 17, 0);
+                }
+                if(rightButton){
+                    state = 0;
+                    init_game(BLACK);
+                    draw_display();
+                    clearButtons();
+                }
+                break;
+            //every game needs a small easter egg at least
+            case 5:
+                init_game(BLACK);
+                draw_display();
+                while(!(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton)){
+                    LCD_DrawString(65, 120, RED, BLACK, "You know how", 18, 0);
+                    LCD_DrawString(83, 140, RED, BLACK, "to PLAY.", 18, 0);
+                }
+                if(holdButton || downButton || rightButton || leftButton || rotLeftButton || rotRightButton){
+                    state = 0;
+                    init_game(BLACK);
+                    draw_display();
+                    clearButtons();
+                }
                 break;
             //shouldn't enter
             default: 
