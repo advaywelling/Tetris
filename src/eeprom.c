@@ -9,6 +9,7 @@
 
 #include "stm32f0xx.h"
 #include <stdio.h>
+#include "eeprom.h"
 
 void internal_clock();
 void enable_ports();
@@ -198,110 +199,110 @@ void eeprom_read(uint16_t loc, char data[], uint8_t len) {
 #include <stdlib.h>
 #include <string.h>
 
-#define FIFOSIZE 16
-char serfifo[FIFOSIZE];
-int seroffset = 0;
+// #define FIFOSIZE 16
+// char serfifo[FIFOSIZE];
+// int seroffset = 0;
 
-//===========================================================================
-// init_usart5
-//===========================================================================
-void init_usart5() {
-    // TODO
-    RCC->AHBENR |= RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIODEN;
-    GPIOC->MODER &= ~GPIO_MODER_MODER12;
-    GPIOC->MODER |= GPIO_MODER_MODER12_1;
-    GPIOC->AFR[1] &= ~GPIO_AFRH_AFSEL12;
-    GPIOC->AFR[1] |= 2 << GPIO_AFRH_AFSEL12_Pos;
-    GPIOD->MODER &= ~GPIO_MODER_MODER2;
-    GPIOD->MODER |= GPIO_MODER_MODER2_1;
-    GPIOD->AFR[0] &= ~GPIO_AFRL_AFSEL2;
-    GPIOD->AFR[0] |= 2 << GPIO_AFRL_AFSEL2_Pos;
-    RCC->APB1ENR |= RCC_APB1ENR_USART5EN;
-    USART5->CR1 &= ~USART_CR1_UE;
-    USART5->CR1 &= ~USART_CR1_M;
-    USART5->CR2 &= ~USART_CR2_STOP;
-    USART5->CR1 &= ~USART_CR1_PCE; 
-    USART5->CR1 &= ~USART_CR1_OVER8;
-    USART5->BRR = 0x1A1;
-    USART5->CR1 |= USART_CR1_TE | USART_CR1_RE;
-    USART5->CR1 |= USART_CR1_UE;
-    while (!(USART5->ISR & USART_ISR_TEACK));
-    while (!(USART5->ISR & USART_ISR_REACK));
+// //===========================================================================
+// // init_usart5
+// //===========================================================================
+// void init_usart5() {
+//     // TODO
+//     RCC->AHBENR |= RCC_AHBENR_GPIOCEN | RCC_AHBENR_GPIODEN;
+//     GPIOC->MODER &= ~GPIO_MODER_MODER12;
+//     GPIOC->MODER |= GPIO_MODER_MODER12_1;
+//     GPIOC->AFR[1] &= ~GPIO_AFRH_AFSEL12;
+//     GPIOC->AFR[1] |= 2 << GPIO_AFRH_AFSEL12_Pos;
+//     GPIOD->MODER &= ~GPIO_MODER_MODER2;
+//     GPIOD->MODER |= GPIO_MODER_MODER2_1;
+//     GPIOD->AFR[0] &= ~GPIO_AFRL_AFSEL2;
+//     GPIOD->AFR[0] |= 2 << GPIO_AFRL_AFSEL2_Pos;
+//     RCC->APB1ENR |= RCC_APB1ENR_USART5EN;
+//     USART5->CR1 &= ~USART_CR1_UE;
+//     USART5->CR1 &= ~USART_CR1_M;
+//     USART5->CR2 &= ~USART_CR2_STOP;
+//     USART5->CR1 &= ~USART_CR1_PCE; 
+//     USART5->CR1 &= ~USART_CR1_OVER8;
+//     USART5->BRR = 0x1A1;
+//     USART5->CR1 |= USART_CR1_TE | USART_CR1_RE;
+//     USART5->CR1 |= USART_CR1_UE;
+//     while (!(USART5->ISR & USART_ISR_TEACK));
+//     while (!(USART5->ISR & USART_ISR_REACK));
 
-}
+// }
 
-//===========================================================================
-// enable_tty_interrupt
-//===========================================================================
-void enable_tty_interrupt(void) {
-    // TODO
-    USART5->CR1 |= USART_CR1_RXNEIE;
-    NVIC_EnableIRQ(USART3_8_IRQn);
-    USART5->CR3 |= USART_CR3_DMAR;
-    RCC->AHBENR |= RCC_AHBENR_DMA2EN;
-    DMA2->CSELR |= DMA2_CSELR_CH2_USART5_RX;
-    DMA2_Channel2->CCR &= ~DMA_CCR_EN;
-    DMA2_Channel2->CMAR = (uint32_t)serfifo;
-    DMA2_Channel2->CPAR = (uint32_t)&USART5->RDR;
-    DMA2_Channel2->CNDTR = FIFOSIZE;
-    DMA2_Channel2->CCR &= ~(DMA_CCR_DIR);
-    DMA2_Channel2->CCR |= (DMA_CCR_TCIE);
-    DMA2_Channel2->CCR |= DMA_CCR_CIRC;
-    DMA2_Channel2->CCR &= ~DMA_CCR_PINC;
-    DMA2_Channel2->CCR |= DMA_CCR_MINC;
-    DMA2_Channel2->CCR |= DMA_CCR_PL_1 | DMA_CCR_PL_0;
-    DMA2_Channel2->CCR |= DMA_CCR_EN;
+// //===========================================================================
+// // enable_tty_interrupt
+// //===========================================================================
+// void enable_tty_interrupt(void) {
+//     // TODO
+//     USART5->CR1 |= USART_CR1_RXNEIE;
+//     NVIC_EnableIRQ(USART3_8_IRQn);
+//     USART5->CR3 |= USART_CR3_DMAR;
+//     RCC->AHBENR |= RCC_AHBENR_DMA2EN;
+//     DMA2->CSELR |= DMA2_CSELR_CH2_USART5_RX;
+//     DMA2_Channel2->CCR &= ~DMA_CCR_EN;
+//     DMA2_Channel2->CMAR = (uint32_t)serfifo;
+//     DMA2_Channel2->CPAR = (uint32_t)&USART5->RDR;
+//     DMA2_Channel2->CNDTR = FIFOSIZE;
+//     DMA2_Channel2->CCR &= ~(DMA_CCR_DIR);
+//     DMA2_Channel2->CCR |= (DMA_CCR_TCIE);
+//     DMA2_Channel2->CCR |= DMA_CCR_CIRC;
+//     DMA2_Channel2->CCR &= ~DMA_CCR_PINC;
+//     DMA2_Channel2->CCR |= DMA_CCR_MINC;
+//     DMA2_Channel2->CCR |= DMA_CCR_PL_1 | DMA_CCR_PL_0;
+//     DMA2_Channel2->CCR |= DMA_CCR_EN;
 
-}
+// }
 
-//===========================================================================
-// interrupt_getchar
-//===========================================================================
-char interrupt_getchar() {
-    // TODO
-    char ch;
-    while(fifo_newline(&input_fifo) == 0) {
-        asm volatile ("wfi");
-    }
-    ch = fifo_remove(&input_fifo);
-    return ch;
+// //===========================================================================
+// // interrupt_getchar
+// //===========================================================================
+// char interrupt_getchar() {
+//     // TODO
+//     char ch;
+//     while(fifo_newline(&input_fifo) == 0) {
+//         asm volatile ("wfi");
+//     }
+//     ch = fifo_remove(&input_fifo);
+//     return ch;
 
-}
+// }
 
-//===========================================================================
-// __io_putchar
-//===========================================================================
-int __io_putchar(int c) {
-    // TODO copy from STEP2
-    if (c == '\n') {
-        while(!(USART5->ISR & USART_ISR_TXE));
-        USART5->TDR = '\r';
-    }
-    while(!(USART5->ISR & USART_ISR_TXE));
-    USART5->TDR = c;
-    return c;
+// //===========================================================================
+// // __io_putchar
+// //===========================================================================
+// int __io_putchar(int c) {
+//     // TODO copy from STEP2
+//     if (c == '\n') {
+//         while(!(USART5->ISR & USART_ISR_TXE));
+//         USART5->TDR = '\r';
+//     }
+//     while(!(USART5->ISR & USART_ISR_TXE));
+//     USART5->TDR = c;
+//     return c;
 
-}
+// }
 
-//===========================================================================
-// __io_getchar
-//===========================================================================
-int __io_getchar(void) {
-    // TODO Use interrupt_getchar() instead of line_buffer_getchar()
-    return interrupt_getchar();
+// //===========================================================================
+// // __io_getchar
+// //===========================================================================
+// int __io_getchar(void) {
+//     // TODO Use interrupt_getchar() instead of line_buffer_getchar()
+//     return interrupt_getchar();
 
-}
+// }
 
-//===========================================================================
-// IRQHandler for USART5
-//===========================================================================
-void USART3_8_IRQHandler(void) {
-    while(DMA2_Channel2->CNDTR != sizeof serfifo - seroffset) {
-        if (!fifo_full(&input_fifo))
-            insert_echo_char(serfifo[seroffset]);
-        seroffset = (seroffset + 1) % sizeof serfifo;
-    }
-}
+// //===========================================================================
+// // IRQHandler for USART5
+// //===========================================================================
+// void USART3_8_IRQHandler(void) {
+//     while(DMA2_Channel2->CNDTR != sizeof serfifo - seroffset) {
+//         if (!fifo_full(&input_fifo))
+//             insert_echo_char(serfifo[seroffset]);
+//         seroffset = (seroffset + 1) % sizeof serfifo;
+//     }
+// }
 
 //===========================================================================
 // Command functions for the shell
@@ -351,21 +352,22 @@ void write(int argc, char* argv[]) {
     eeprom_write(addr, data, msglen);
 }
 
-void read(int argc, char* argv[]) {
+char* read(int argc, char* argv[]) {
     if (argc != 2) {
         printf("Usage: read <addr>\n");
         printf("Ensure the address is a hexadecimal number.  No need to include 0x.\n");
         return;
     }
     uint32_t addr = strtol(argv[1], NULL, 16); 
-    char data[32];
+    char data_temp[32];
     // ensure addr is a multiple of 32
     if ((addr % 32) != 0) {
         printf("Address 0x%ld is not evenly divisible by 32.  Your address must be a hexadecimal value.\n", addr);
         return;
     }
-    eeprom_read(addr, data, 32);
-    printf("String at address 0x%ld: %s\n", addr, data);
+    eeprom_read(addr, data_temp, 32);
+    //printf("String at address 0x%ld: %s\n", addr, data);
+    return data_temp;
 }
 
 struct commands_t {
@@ -373,22 +375,22 @@ struct commands_t {
     void      (*fn)(int argc, char *argv[]);
 };
 
-struct commands_t cmds[] = {
+struct commands_t cmd_io[] = {
     { "write", write },
     { "read", read }
 };
 
-void exec(int argc, char *argv[])
+void execute(int argc, char *argv[])
 {
-    for(int i=0; i<sizeof cmds/sizeof cmds[0]; i++)
-        if (strcmp(cmds[i].cmd, argv[0]) == 0) {
-            cmds[i].fn(argc, argv);
+    for(int i=0; i<sizeof cmd_io/sizeof cmd_io[0]; i++)
+        if (strcmp(cmd_io[i].cmd, argv[0]) == 0) {
+            cmd_io[i].fn(argc, argv);
             return;
         }
     printf("%s: No such command.\n", argv[0]);
 }
 
-void parse_command(char *c)
+void parse_commands(char *c)
 {
     char *argv[20];
     int argc=0;
@@ -408,8 +410,35 @@ void parse_command(char *c)
     }
     if (argc > 0) {
         argv[argc] = "";
-        exec(argc, argv);
+        execute(argc, argv);
     }
+}
+
+char* read_high_score() {
+    //parse_commands("read 0");
+    char data_temp[32];
+    char* data = "";
+    char* data_ptr = data;
+    eeprom_read(0, data_temp, 32);
+    for (int i = 0; i < 32; i++)
+    {
+        if (data_temp[i] != '\0')
+        {
+            data_ptr = data_temp[i];
+        }
+        else
+        {
+            data_ptr = '\0';
+        }
+        data_ptr++;
+    }
+    return data;
+}
+
+void write_high_score(int score) {
+    char score_str[32];
+    sprintf(score_str, "%d", score);
+    eeprom_write(0, score_str, strlen(score_str));
 }
 
 //===========================================================================

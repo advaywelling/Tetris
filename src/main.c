@@ -9,8 +9,16 @@
 #include "buttons.h"
 #include "drawbg.h"
 #include <time.h>
+#include <strings.h>
+#include <string.h>
+#include "eeprom.h"
+
+int score = 0;
+int high_score = 0;
 
 void internal_clock();
+
+
 
 void clearButtons(){
     rightButton = 0;
@@ -129,12 +137,14 @@ void check_line_clear(){
             }
         }
         if(lineFilled == 1){
+            score += 10;
             clear_line(r);
             shiftDown(r);
             clear_line(0);
             r++;
         }
     }
+
 }
 
 //returns 1 for touched bottom, 0 if in air 
@@ -215,6 +225,21 @@ int main() {
     next_piece = NULL;
     hold_piece = NULL;
     draw_display();
+    char* high_score_str = "";
+    high_score_str = read_high_score();
+    char* score_str = "0000";
+    if (!strcmp(high_score_str, 0))
+    {
+        high_score = 0;
+        high_score_str = "0000";
+    } else
+    {
+        high_score = atoi(high_score_str);
+    }
+    
+    
+    //high_score = atoi(high_score_str);
+    //read_high_score();
     //actual game
     while(1){
         switch(state){
@@ -232,16 +257,18 @@ int main() {
                     LCD_DrawString(69, 140, WHITE, BLACK, "Press Right", 19, 0);
                     LCD_DrawString(82, 160, WHITE, BLACK, "To START", 19, 0);
                     LCD_DrawString(62, 190, WHITE, BLACK, "Left: Controls", 17, 0);
-                    LCD_DrawString(69, 240, WHITE, BLACK, "High Score:", 19, 0);
+                    LCD_DrawString(69, 240, WHITE, BLACK, "High Score:", 19, 0); //START HOGH SCORE
+                    LCD_DrawString(69, 270, WHITE, BLACK, high_score_str, 19, 0);
                 }
-                if(rightButton){
+                if(leftButton || rotLeftButton){
+                    score = 0;
                     srand(TIM2->CNT);
                     state = 1;
                     cnt = 0;
                     draw_display();
                     clearButtons();
                 }
-                if(leftButton || rotLeftButton){
+                if(rightButton){
                     state = 4;
                     draw_display();
                     clearButtons();
@@ -250,12 +277,18 @@ int main() {
                 break;
             //playing game
             case 1:
+
+                LCD_DrawString(2, 205, WHITE, BLACK, score_str, 19, 0);
                 if(next_piece == NULL) next_piece = generate_piece();
                 if(current_piece == NULL) current_piece = generate_piece();
                 draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
                 draw_next_piece(next_piece, 0);  
                 
                 if(check_bottom(current_piece)){
+                    score += 1;
+                    score_str = "";
+                    sprintf(score_str, "%d", score);
+                    LCD_DrawString(2, 205, WHITE, BLACK, score_str, 19, 0);
                     draw_display();
                     free(current_piece->blocks);
                     free(current_piece);
@@ -267,7 +300,12 @@ int main() {
                         free(hold_piece); //untested
                         hold_piece = NULL;
                         clearButtons();
-                        state = 2;
+                        state = 2; //CHECK SCORE VS HIGH SCORE
+                        if (score > high_score)
+                        {
+                            write_high_score(score);
+                            sprintf(high_score_str, "%d", score);
+                        }                        
                     }
                     current_piece = next_piece;
                     draw_next_piece(next_piece, 1);
@@ -344,11 +382,13 @@ int main() {
                 LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
                 nano_wait(500000000);
                 clearButtons();
+
                 while(!(rightButton || leftButton || rotLeftButton)){
                     LCD_DrawString(76, 120, RED, BLACK, "GAME OVER", 19, 0);
                     LCD_DrawString(69, 170, RED, BLACK, "Press Right", 19, 0);
                     LCD_DrawString(82, 190, RED, BLACK, "To  MENU", 17, 0);
-                    LCD_DrawString(69, 230, RED, BLACK, "High Score:", 19, 0);
+                    LCD_DrawString(69, 230, RED, BLACK, "High Score:", 19, 0); //HIGH SCORE END
+                    LCD_DrawString(69, 240, RED, BLACK, high_score_str, 19, 0);
                     //TODO: room for score, also ctrlf for "high score" in case theres more e.g. menu screen too
                     LCD_DrawString(60, 300, RED, BLACK, "Left: How to Play", 15, 0);
                 }
