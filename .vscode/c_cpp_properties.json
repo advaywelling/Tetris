@@ -8,19 +8,19 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/include",
-                "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/src",
-                "/Users/arnav/.platformio/packages/framework-cmsis/CMSIS/Include",
-                "/Users/arnav/.platformio/packages/framework-cmsis-stm32f0/Include",
+                "C:/Users/yasha/OneDrive/Documents/362/tetrists/include",
+                "C:/Users/yasha/OneDrive/Documents/362/tetrists/src",
+                "C:/Users/yasha/.platformio/packages/framework-cmsis/CMSIS/Include",
+                "C:/Users/yasha/.platformio/packages/framework-cmsis-stm32f0/Include",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/include",
-                    "/Users/arnav/Documents/Purdue/Spring_25/ECE_362/tetrists/src",
-                    "/Users/arnav/.platformio/packages/framework-cmsis/CMSIS/Include",
-                    "/Users/arnav/.platformio/packages/framework-cmsis-stm32f0/Include",
+                    "C:/Users/yasha/OneDrive/Documents/362/tetrists/include",
+                    "C:/Users/yasha/OneDrive/Documents/362/tetrists/src",
+                    "C:/Users/yasha/.platformio/packages/framework-cmsis/CMSIS/Include",
+                    "C:/Users/yasha/.platformio/packages/framework-cmsis-stm32f0/Include",
                     ""
                 ]
             },
@@ -32,7 +32,7 @@
                 "STM32F091",
                 ""
             ],
-            "compilerPath": "/Users/arnav/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
+            "compilerPath": "C:/Users/yasha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc.exe",
             "compilerArgs": [
                 "-mthumb",
                 "-mcpu=cortex-m0",
