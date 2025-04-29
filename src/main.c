@@ -406,7 +406,7 @@ int main() {
                     LCD_DrawString(69, 170, RED, BLACK, "Press Right", 19, 0);
                     LCD_DrawString(82, 190, RED, BLACK, "To  MENU", 17, 0);
                     LCD_DrawString(69, 230, RED, BLACK, "High Score:", 19, 0); //HIGH SCORE END
-                    LCD_DrawString(69, 240, RED, BLACK, high_score_str, 19, 0);
+                    LCD_DrawString(69, 270, RED, BLACK, high_score_str, 19, 0);
                     LCD_DrawString(60, 300, RED, BLACK, "Left: How to Play", 15, 0);
                 }
                 if(rightButton){
