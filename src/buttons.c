@@ -58,7 +58,7 @@ void TIM2_IRQHandler(){
             }
             if(i==1){
                 //hold
-                downButton = 1;
+                holdButton = 1;
             }
             if(i==2){
                 //rotate right
@@ -70,7 +70,7 @@ void TIM2_IRQHandler(){
             }
             if(i==4){
                 //move down
-                holdButton = 1;
+                downButton = 1;
             }
             if(i==5){
                 //move right

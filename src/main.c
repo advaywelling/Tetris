@@ -123,7 +123,6 @@ void shiftDown(int r){
     }
 }
 
-//TODO: SCOREEEEEEEEEEEEEEEEEEEE
 void check_line_clear(){
     int lineFilled = 1;
 
@@ -280,7 +279,7 @@ int main() {
                     LCD_DrawString(69, 240, WHITE, BLACK, "High Score:", 19, 0); //START HOGH SCORE
                     LCD_DrawString(69, 270, WHITE, BLACK, high_score_str, 19, 0);
                 }
-                if(leftButton || rotLeftButton){
+                if(rightButton){
                     score = 0;
                     srand(TIM2->CNT);
                     state = 1;
@@ -288,7 +287,7 @@ int main() {
                     draw_display();
                     clearButtons();
                 }
-                if(rightButton){
+                if(leftButton || rotLeftButton){
                     state = 4;
                     draw_display();
                     clearButtons();
@@ -297,7 +296,7 @@ int main() {
                 break;
             //playing game
             case 1:
-
+                sprintf(score_str, "%d", score);
                 LCD_DrawString(2, 205, WHITE, BLACK, score_str, 19, 0);
                 if(next_piece == NULL) next_piece = generate_piece();
                 if(current_piece == NULL) current_piece = generate_piece();
@@ -311,10 +310,11 @@ int main() {
                     
                     check_line_clear();
                     if(check_bottom(next_piece)){
-                        
-                        draw_hold_piece(hold_piece, 1); //untested
-                        // free(hold_piece->blocks); //untested
-                        // free(hold_piece); //untested
+                        if(hold_piece != NULL){
+                            draw_hold_piece(hold_piece, 1);
+                            free(hold_piece->blocks);
+                            free(hold_piece);
+                        }
                         hold_piece = NULL;
                         clearButtons();
                         state = 2; //CHECK SCORE VS HIGH SCORE
@@ -406,17 +406,20 @@ int main() {
                     LCD_DrawString(82, 190, RED, BLACK, "To  MENU", 17, 0);
                     LCD_DrawString(69, 230, RED, BLACK, "High Score:", 19, 0); //HIGH SCORE END
                     LCD_DrawString(69, 240, RED, BLACK, high_score_str, 19, 0);
-                    //TODO: room for score, also ctrlf for "high score" in case theres more e.g. menu screen too
                     LCD_DrawString(60, 300, RED, BLACK, "Left: How to Play", 15, 0);
                 }
                 if(rightButton){
                     state = 0;
+                    //erase old score when leaving ending screen
+                    LCD_DrawString(2, 205, BLACK, BLACK, score_str, 19, 0);
                     init_game(BLACK);
                     draw_display();
                     clearButtons();
                 }
                 if(rotLeftButton || leftButton){
                     state = 5;
+                    //erase old score when leaving ending screen
+                    LCD_DrawString(2, 205, BLACK, BLACK, score_str, 19, 0);
                     init_game(BLACK);
                     draw_display();
                     clearButtons();
