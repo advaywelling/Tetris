@@ -12,6 +12,7 @@
 #include <strings.h>
 #include <string.h>
 #include "eeprom.h"
+#include <ctype.h>
 
 int score = 0;
 int high_score = 0;
@@ -202,6 +203,8 @@ int cnt = 0;
 int holdcycle = 1;
 int title_color;
 int main() {
+    enable_ports();
+    init_i2c();
     srand(31);
     internal_clock();
     //buttons setup
@@ -225,13 +228,30 @@ int main() {
     next_piece = NULL;
     hold_piece = NULL;
     draw_display();
-    char* high_score_str = "";
-    high_score_str = read_high_score();
-    char* score_str = "0000";
+    char* temp_data = read_high_score();
+    char high_score_str[32];
+    //high_score_str = read_high_score();
+    //strcpy(high_score_str, temp_data);
+    for (int i = 0; i < 32 && temp_data[i] != '\0'; i++)
+    {
+        if (isdigit(temp_data[i]))
+        {
+            high_score_str[i] = temp_data[i];
+        }
+        else
+        {
+            high_score_str[i] = '\0';
+            break;
+        }        
+    }
+    high_score_str[31] = '\0';
+    //high_score_str = temp_data;
+    char score_str[32];
+    strcpy(score_str, "0");
     if (!strcmp(high_score_str, 0))
     {
         high_score = 0;
-        high_score_str = "0000";
+        strcpy(high_score_str, "0");
     } else
     {
         high_score = atoi(high_score_str);
@@ -283,21 +303,18 @@ int main() {
                 if(current_piece == NULL) current_piece = generate_piece();
                 draw_piece(current_piece->blocks, current_piece->start_x, current_piece->start_y, current_piece->color);
                 draw_next_piece(next_piece, 0);  
-                
                 if(check_bottom(current_piece)){
-                    score += 1;
-                    score_str = "";
-                    sprintf(score_str, "%d", score);
-                    LCD_DrawString(2, 205, WHITE, BLACK, score_str, 19, 0);
                     draw_display();
                     free(current_piece->blocks);
                     free(current_piece);
                     holdcycle = 1;
+                    
                     check_line_clear();
                     if(check_bottom(next_piece)){
+                        
                         draw_hold_piece(hold_piece, 1); //untested
-                        free(hold_piece->blocks); //untested
-                        free(hold_piece); //untested
+                        // free(hold_piece->blocks); //untested
+                        // free(hold_piece); //untested
                         hold_piece = NULL;
                         clearButtons();
                         state = 2; //CHECK SCORE VS HIGH SCORE

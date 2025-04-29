@@ -39,12 +39,11 @@ void init_i2c(void) {
     I2C1->CR1 |= I2C_CR1_ANFOFF;
     I2C1->CR1 |= I2C_CR1_ERRIE;
     I2C1->CR1 |= I2C_CR1_NOSTRETCH; 
-    I2C1->TIMINGR = (0 << 28) | (3 << 20) | (1 << 16) | (3 << 8) | (9 << 0);
+    I2C1->TIMINGR = (5 << 28) | (3 << 20) | (1 << 16) | (3 << 8) | (9 << 0);
     //PRESC=0, SCLDEL=3, SDADEL=1, SCLH=3, SCLL=9 for 400kHz
 
-             
-        
-    I2C1->CR2 &= ~I2C_CR2_ADD10;     
+    I2C1->CR2 &= ~I2C_CR2_ADD10;  
+    I2C1->CR2 &= ~I2C_CR2_AUTOEND;
     I2C1->CR1 |= I2C_CR1_PE;   
 }
 
@@ -121,12 +120,12 @@ int8_t i2c_senddata(uint8_t targadr, uint8_t data[], uint8_t size) {
 //===========================================================================
 // Receive size chars from the I2C bus at targadr and store in data[size].
 //===========================================================================
-int i2c_recvdata(uint8_t targadr, uint8_t data[], uint8_t size) {
+int i2c_recvdata(uint8_t targadr, void *data, uint8_t size) {
     i2c_waitidle();
     i2c_start(targadr, size, 1); // Read
 
     // Cast the void pointer to uint8_t pointer
-    //uint8_t *recv_data = (uint8_t *)data;
+    uint8_t *udata = (uint8_t *)data;
 
     for (int i = 0; i < size; i++) {
         int count = 0;
@@ -140,13 +139,18 @@ int i2c_recvdata(uint8_t targadr, uint8_t data[], uint8_t size) {
                 return -1;
             }
         }
-        data[i] = I2C1->RXDR & I2C_RXDR_RXDATA;
-        if (data[i] == 0)
-            return 0;
+        udata[i] = I2C1->RXDR;
     }
-    //data[size] = '\0';
 
+    while (!(I2C1->ISR & I2C_ISR_TC) && !(I2C1->ISR & I2C_ISR_NACKF));
+    if (I2C1->ISR & I2C_ISR_NACKF) {
+        //i2c_clearnack();
+        //i2c_stop();
+        return -1;
+    }
+    i2c_stop();
     return 0;
+    //data[size] = '\0';
 }
 
 //===========================================================================
@@ -332,7 +336,7 @@ void write(int argc, char* argv[]) {
             data[i++] = ' ';
         }
         // else {
-        //      data[i + 1] = '\0';
+        //     data[i + 1] = '\0';
         // }
 
         j++;
@@ -416,31 +420,66 @@ void parse_commands(char *c)
 
 char* read_high_score() {
     //parse_commands("read 0");
-    char data_temp[32];
-    char* data = "";
-    char* data_ptr = data;
+    static char data_temp[32];
+    static char data[32];
+    //char data_ptr = data[0];
     eeprom_read(0, data_temp, 32);
-    for (int i = 0; i < 32; i++)
-    {
-        if (data_temp[i] != '\0')
-        {
-            data_ptr = data_temp[i];
-        }
-        else
-        {
-            data_ptr = '\0';
-        }
-        data_ptr++;
-    }
-    return data;
+    // int i = 0;
+    // while (data_temp[i] != '\0' && i < 32) {
+    //     data[i] = data_temp[i];
+    //     i++;
+    // }
+
+    // Null-terminate the string at the first null character
+    //data_temp[i] = '\0';
+
+    return data_temp; 
+    //return data_temp;
 }
 
 void write_high_score(int score) {
     char score_str[32];
     sprintf(score_str, "%d", score);
-    eeprom_write(0, score_str, strlen(score_str));
+    score_str[strlen(score_str)] = '\0'; 
+    eeprom_write(0, score_str, strlen(score_str)+1);
 }
 
+void intToStr(int N, char *str) {
+    int i = 0;
+  
+    // Save the copy of the number for sign
+    int sign = N;
+
+    // If the number is negative, make it positive
+    if (N < 0)
+        N = -N;
+
+    // Extract digits from the number and add them to the
+    // string
+    while (N > 0) {
+      
+        // Convert integer digit to character and store
+      	// it in the str
+        str[i++] = N % 10 + '0';
+      	N /= 10;
+    } 
+
+    // If the number was negative, add a minus sign to the
+    // string
+    if (sign < 0) {
+        str[i++] = '-';
+    }
+
+    // Null-terminate the string
+    str[i] = '\0';
+
+    // Reverse the string to get the correct order
+    for (int j = 0, k = i - 1; j < k; j++, k--) {
+        char temp = str[j];
+        str[j] = str[k];
+        str[k] = temp;
+    }
+}
 //===========================================================================
 // main()
 //===========================================================================

@@ -17,7 +17,7 @@ void i2c_waitidle(void);
 void i2c_clearnack(void);
 int i2c_checknack(void);
 int8_t i2c_senddata(uint8_t targadr, uint8_t data[], uint8_t size);
-int i2c_recvdata(uint8_t targadr, uint8_t data[], uint8_t size);
+int i2c_recvdata(uint8_t targadr, void *data, uint8_t size);
 
 // EEPROM Functions
 void eeprom_write(uint16_t loc, const char* data, uint8_t len);
@@ -34,5 +34,6 @@ void parse_commands(char *c);
 // High Score Functions
 char* read_high_score(void);
 void write_high_score(int score);
+void intToStr(int N, char *str);
 
 #endif // I2C_LAB_H
