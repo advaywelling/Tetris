@@ -227,6 +227,7 @@ int main() {
     next_piece = NULL;
     hold_piece = NULL;
     draw_display();
+    score = 0;
     char* temp_data = read_high_score();
     char high_score_str[32];
     //high_score_str = read_high_score();
