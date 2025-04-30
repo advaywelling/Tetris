@@ -8,19 +8,19 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "C:/Users/yasha/OneDrive/Documents/362/tetrists/include",
-                "C:/Users/yasha/OneDrive/Documents/362/tetrists/src",
-                "C:/Users/yasha/.platformio/packages/framework-cmsis/CMSIS/Include",
-                "C:/Users/yasha/.platformio/packages/framework-cmsis-stm32f0/Include",
+                "/Users/advaywelling/Purdue/ECE 362/tetrists/include",
+                "/Users/advaywelling/Purdue/ECE 362/tetrists/src",
+                "/Users/advaywelling/.platformio/packages/framework-cmsis/CMSIS/Include",
+                "/Users/advaywelling/.platformio/packages/framework-cmsis-stm32f0/Include",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "C:/Users/yasha/OneDrive/Documents/362/tetrists/include",
-                    "C:/Users/yasha/OneDrive/Documents/362/tetrists/src",
-                    "C:/Users/yasha/.platformio/packages/framework-cmsis/CMSIS/Include",
-                    "C:/Users/yasha/.platformio/packages/framework-cmsis-stm32f0/Include",
+                    "/Users/advaywelling/Purdue/ECE 362/tetrists/include",
+                    "/Users/advaywelling/Purdue/ECE 362/tetrists/src",
+                    "/Users/advaywelling/.platformio/packages/framework-cmsis/CMSIS/Include",
+                    "/Users/advaywelling/.platformio/packages/framework-cmsis-stm32f0/Include",
                     ""
                 ]
             },
@@ -32,7 +32,7 @@
                 "STM32F091",
                 ""
             ],
-            "compilerPath": "C:/Users/yasha/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc.exe",
+            "compilerPath": "/Users/advaywelling/.platformio/packages/toolchain-gccarmnoneeabi/bin/arm-none-eabi-gcc",
             "compilerArgs": [
                 "-mthumb",
                 "-mcpu=cortex-m0",

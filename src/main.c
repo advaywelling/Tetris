@@ -13,7 +13,58 @@
 #include <string.h>
 #include "eeprom.h"
 #include <ctype.h>
+#include <math.h>
 
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+
+// Audio parameters
+#define N 1000
+#define RATE 20000
+short int wavetable[N];
+int step0 = 0;
+int offset0 = 0;
+uint32_t volume = 4095; // Fixed volume (50%)
+
+void init_wavetable(void);
+void setup_dac(void);
+void init_tim6(void);
+void set_freq(float f);
+
+// Audio functions
+void init_wavetable(void) {
+    for(int i=0; i<N; i++)
+        wavetable[i] = 32767 * sin(2 * M_PI * i / N);
+}
+
+void setup_dac(void) {
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN;
+    GPIOA->MODER |= 0x0300;        // Analog
+    RCC->APB1ENR |= RCC_APB1ENR_DACEN;
+    DAC->CR |= DAC_CR_EN1;         // Enable DAC channel 1
+}
+
+void init_tim6(void) {
+    RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+    TIM6->PSC = 48 - 1;            // 1MHz
+    TIM6->ARR = (1000000/RATE) -1; // 20kHz update rate
+    TIM6->DIER |= TIM_DIER_UIE;    // Enable update interrupt
+    NVIC_EnableIRQ(TIM6_DAC_IRQn);
+    TIM6->CR1 |= TIM_CR1_CEN;
+}
+
+void set_freq(float f) {
+    step0 = (int)((f * N / RATE) * (1 << 16));
+}
+
+void TIM6_DAC_IRQHandler(void) {
+    TIM6->SR &= ~TIM_SR_UIF;
+    offset0 += step0;
+    if(offset0 >= N << 16) offset0 -= N << 16;
+    int samp = wavetable[offset0 >> 16];
+    DAC->DHR12R1 = (samp >> 4) + 2048;  // Scale to 12-bit DAC range
+}
 int score = 0;
 int high_score = 0;
 
@@ -206,6 +257,11 @@ int main() {
     init_i2c();
     srand(31);
     internal_clock();
+    //audio
+    init_wavetable();
+    setup_dac();
+    init_tim6();
+    set_freq(440.0); 
     //buttons setup
     setup_TIM2();
     //lcd setup

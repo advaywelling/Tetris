@@ -6,6 +6,7 @@
         "buttons.h": "c",
         "stm32f0xx.h": "c",
         "tty.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "math.h": "c"
     }
 }
