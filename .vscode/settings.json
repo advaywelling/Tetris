@@ -7,6 +7,8 @@
         "stm32f0xx.h": "c",
         "tty.h": "c",
         "stdint.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "strings.h": "c",
+        "ctype.h": "c"
     }
 }

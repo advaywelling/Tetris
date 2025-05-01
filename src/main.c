@@ -20,6 +20,22 @@
 #endif
 
 // Audio parameters
+#define NOTE_COUNT 8
+const float tune[NOTE_COUNT] = {
+    261.63f,  // C4
+    329.63f,  // E4
+    392.00f,  // G4
+    523.25f,  // C5
+    659.26f,  // E5
+    783.99f,  // G5
+    523.25f,  // C5
+    392.00f   // G4
+};
+
+#define NOTES_PER_SECOND 4  // Faster tempo for better flow
+volatile uint8_t current_note = 0;
+volatile uint32_t note_counter = 0;
+
 #define N 1000
 #define RATE 20000
 short int wavetable[N];
@@ -56,14 +72,40 @@ void init_tim6(void) {
 
 void set_freq(float f) {
     step0 = (int)((f * N / RATE) * (1 << 16));
-}
-
-void TIM6_DAC_IRQHandler(void) {
+}void TIM6_DAC_IRQHandler(void) {
+    static uint32_t interrupt_count = 0;
+    const uint32_t notes_per_interrupt = RATE / NOTES_PER_SECOND;
+    static uint8_t direction = 0; // 0=ascending, 1=descending
+    
     TIM6->SR &= ~TIM_SR_UIF;
+    
+    // Update waveform position
     offset0 += step0;
     if(offset0 >= N << 16) offset0 -= N << 16;
+    
+    // Generate sample with volume variation
     int samp = wavetable[offset0 >> 16];
-    DAC->DHR12R1 = (samp >> 4) + 2048;  // Scale to 12-bit DAC range
+    int32_t scaled_samp = samp * (1 + (interrupt_count % 200 < 100)); // Pseudo-pulse width modulation
+    DAC->DHR12R1 = (scaled_samp >> 5) + 2048;
+
+    // Change note with dynamic pattern
+    if(++interrupt_count >= notes_per_interrupt) {
+        interrupt_count = 0;
+        
+        if(direction == 0) {
+            if(++current_note >= NOTE_COUNT-1) direction = 1;
+        } else {
+            if(--current_note <= 0) direction = 0;
+        }
+        
+        step0 = (int)((tune[current_note] * N / RATE * (1 << 16)));
+        
+        // Add subtle emphasis on first beat
+        if(current_note == 0) {
+            DAC->DHR12R1 = (samp >> 3) + 2048; // Temporary volume boost
+            nano_wait(10000);
+        }
+    }
 }
 int score = 0;
 int high_score = 0;
@@ -261,7 +303,8 @@ int main() {
     init_wavetable();
     setup_dac();
     init_tim6();
-    set_freq(440.0); 
+    //set_freq(440.0); 
+    step0 = (int)((tune[0] * N / RATE * (1 << 16)));
     //buttons setup
     setup_TIM2();
     //lcd setup
