@@ -1,3 +1,4 @@
 Tetris coded in C on an STM32! 
 
-All important code is in 'main.c'
+
+![IMG_8722](https://github.com/user-attachments/assets/0e254035-829c-4904-8808-3254f8afdda4)
