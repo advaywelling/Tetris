@@ -1,6 +1,6 @@
 Tetris coded in C on an STM32! 
 
-
+Upload and Monitor this code onto a fully hooked up STM32 (no tutorial here unfortunately, go figure)
 
 
 
